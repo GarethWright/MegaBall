@@ -51,7 +51,6 @@
    "width": 300,
    "height": 56,
    "z": 1,
-   "blendMode": "screen",
    "opacity": 0.6,
    "fill": {
     "gradient": {
@@ -87,7 +86,6 @@
    "height": 10,
    "cornerRadius": 5,
    "z": 2,
-   "blendMode": "screen",
    "opacity": 0,
    "fill": {
     "gradient": {
@@ -152,7 +150,6 @@
    "width": 9,
    "height": 9,
    "z": 6,
-   "blendMode": "screen",
    "fill": {
     "gradient": {
      "type": "radial",
@@ -277,7 +274,6 @@
    "width": 9,
    "height": 9,
    "z": 6,
-   "blendMode": "screen",
    "fill": {
     "gradient": {
      "type": "radial",
@@ -421,7 +417,6 @@
    "y": 3,
    "closed": false,
    "z": 12,
-   "blendMode": "screen",
    "points": [
     {
      "x": -50,
@@ -453,7 +448,6 @@
    "height": 26,
    "cornerRadius": 12,
    "z": 30,
-   "blendMode": "screen",
    "opacity": 0,
    "fill": {
     "gradient": {

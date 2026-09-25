@@ -130,7 +130,6 @@
    "width": 640,
    "height": 300,
    "z": 1,
-   "blendMode": "screen",
    "opacity": 0.8,
    "fill": {
     "gradient": {
@@ -164,7 +163,6 @@
    "width": 640,
    "height": 300,
    "z": 1,
-   "blendMode": "screen",
    "opacity": 0.8,
    "fill": {
     "gradient": {
@@ -884,7 +882,6 @@
    "width": 70,
    "height": 70,
    "z": 2900,
-   "blendMode": "screen",
    "fill": {
     "gradient": {
      "type": "radial",

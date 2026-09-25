@@ -655,7 +655,6 @@
    "width": 1200,
    "height": 26,
    "z": 2,
-   "blendMode": "screen",
    "opacity": 0.28,
    "fill": {
     "gradient": {
@@ -693,7 +692,6 @@
    "width": 1200,
    "height": 26,
    "z": 2,
-   "blendMode": "screen",
    "opacity": 0.28,
    "fill": {
     "gradient": {
@@ -731,7 +729,6 @@
    "width": 1200,
    "height": 26,
    "z": 2,
-   "blendMode": "screen",
    "opacity": 0.28,
    "fill": {
     "gradient": {
@@ -769,7 +766,6 @@
    "width": 1200,
    "height": 26,
    "z": 2,
-   "blendMode": "screen",
    "opacity": 0.28,
    "fill": {
     "gradient": {
@@ -807,7 +803,6 @@
    "width": 620,
    "height": 620,
    "z": 3,
-   "blendMode": "screen",
    "opacity": 0.55,
    "fill": {
     "gradient": {
@@ -2116,7 +2111,6 @@
    "width": 1200,
    "height": 3,
    "z": 9,
-   "blendMode": "screen",
    "fill": {
     "gradient": {
      "type": "linear",

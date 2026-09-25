@@ -21,7 +21,6 @@
      "width": 84,
      "height": 44,
      "z": 1,
-     "blendMode": "screen",
      "fill": {
       "gradient": {
        "type": "radial",
@@ -128,7 +127,6 @@
      "rotation": 20,
      "z": 5,
      "opacity": 0.55,
-     "blendMode": "screen",
      "clipBy": "E_body",
      "fill": {
       "color": "#e4eae4"
@@ -313,7 +311,6 @@
      "width": 84,
      "height": 44,
      "z": 1,
-     "blendMode": "screen",
      "fill": {
       "gradient": {
        "type": "radial",
@@ -420,7 +417,6 @@
      "rotation": 20,
      "z": 5,
      "opacity": 0.55,
-     "blendMode": "screen",
      "clipBy": "S_body",
      "fill": {
       "color": "#e3e8ef"
@@ -605,7 +601,6 @@
      "width": 84,
      "height": 44,
      "z": 1,
-     "blendMode": "screen",
      "fill": {
       "gradient": {
        "type": "radial",
@@ -712,7 +707,6 @@
      "rotation": 20,
      "z": 5,
      "opacity": 0.55,
-     "blendMode": "screen",
      "clipBy": "C_body",
      "fill": {
       "color": "#e1eae9"
@@ -897,7 +891,6 @@
      "width": 84,
      "height": 44,
      "z": 1,
-     "blendMode": "screen",
      "fill": {
       "gradient": {
        "type": "radial",
@@ -1004,7 +997,6 @@
      "rotation": 20,
      "z": 5,
      "opacity": 0.55,
-     "blendMode": "screen",
      "clipBy": "L_body",
      "fill": {
       "color": "#eee5e6"
@@ -1189,7 +1181,6 @@
      "width": 84,
      "height": 44,
      "z": 1,
-     "blendMode": "screen",
      "fill": {
       "gradient": {
        "type": "radial",
@@ -1296,7 +1287,6 @@
      "rotation": 20,
      "z": 5,
      "opacity": 0.55,
-     "blendMode": "screen",
      "clipBy": "M_body",
      "fill": {
       "color": "#e8e7ee"
@@ -1481,7 +1471,6 @@
      "width": 84,
      "height": 44,
      "z": 1,
-     "blendMode": "screen",
      "fill": {
       "gradient": {
        "type": "radial",
@@ -1588,7 +1577,6 @@
      "rotation": 20,
      "z": 5,
      "opacity": 0.55,
-     "blendMode": "screen",
      "clipBy": "B_body",
      "fill": {
       "color": "#eee6e2"
@@ -1773,7 +1761,6 @@
      "width": 84,
      "height": 44,
      "z": 1,
-     "blendMode": "screen",
      "fill": {
       "gradient": {
        "type": "radial",
@@ -1880,7 +1867,6 @@
      "rotation": 20,
      "z": 5,
      "opacity": 0.55,
-     "blendMode": "screen",
      "clipBy": "P_body",
      "fill": {
       "color": "#ebe7e0"
@@ -2065,7 +2051,6 @@
      "width": 84,
      "height": 44,
      "z": 1,
-     "blendMode": "screen",
      "fill": {
       "gradient": {
        "type": "radial",
@@ -2172,7 +2157,6 @@
      "rotation": 20,
      "z": 5,
      "opacity": 0.55,
-     "blendMode": "screen",
      "clipBy": "X_body",
      "fill": {
       "color": "#e5e8ef"
@@ -2357,7 +2341,6 @@
      "width": 84,
      "height": 44,
      "z": 1,
-     "blendMode": "screen",
      "fill": {
       "gradient": {
        "type": "radial",
@@ -2464,7 +2447,6 @@
      "rotation": 20,
      "z": 5,
      "opacity": 0.55,
-     "blendMode": "screen",
      "clipBy": "F_body",
      "fill": {
       "color": "#eee5e6"

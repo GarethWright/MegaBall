@@ -15,6 +15,8 @@ mkdirSync(PREVIEW, { recursive: true });
 
 const FONT_DISPLAY = join(ROOT, "rive-src", "Audiowide-Regular.ttf");
 const FONT_UI = join(ROOT, "rive-src", "inter.ttf");
+const FONT_HUD_DISPLAY = join(ROOT, "rive-src", "Michroma-Regular.ttf");
+const FONT_HUD_UI = join(ROOT, "rive-src", "Rajdhani-SemiBold.ttf");
 const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !?.:-'&/+,%×·←→";
 const ANY_TEXT = UPPER + "abcdefghijklmnopqrstuvwxyz";
 
@@ -45,7 +47,12 @@ for (const h of HUES) {
   const t = await tokens(h);
   RAINBOW.push({ seed: h, light: t.gradients.primary[0], dark: t.gradients.primary[1], base: t.palette.primary, soft: t.palette.primarySoft });
 }
-writeFileSync(join(OUT, "tokens.json"), JSON.stringify({ palette: P, gradients: T.gradients, warm: WARM.gradients, rainbow: RAINBOW }, null, 2));
+// HUD view: cool mission-control blues; status colours reuse the harmonised rainbow hues
+const HUD = await tokens("#4aa8ff", "tech");
+const HP = HUD.palette;
+const HUD_ORANGE = WARM.gradients.primary[0], HUD_GREEN = RAINBOW[3].base, HUD_RED = RAINBOW[0].base;
+writeFileSync(join(OUT, "tokens.json"), JSON.stringify({ palette: P, gradients: T.gradients, warm: WARM.gradients, rainbow: RAINBOW,
+  hud: { palette: HP, gradients: HUD.gradients, orange: HUD_ORANGE, green: HUD_GREEN, red: HUD_RED } }, null, 2));
 
 const W = 1200, H = 800;
 const rng = (seed) => () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
@@ -530,6 +537,270 @@ function bannerScene() {
   };
 }
 
+// ---------------------------------------------------------------- 6. HUD view (orbit backdrop, title, banner)
+const MICHROMA = { M: 2808, E: 1792, G: 2177, A: 2176, B: 2112, L: 1664 };
+function orbitArtboard() {
+  const PC = { x: 760, y: 1180 }, R = 1000, LOOP = 720;
+  const r = rng(23);
+  const shapes = [
+    { id: "space", type: "rect", x: W / 2, y: H / 2, width: W, height: H, z: 0,
+      fill: vGrad(H, [{ color: HP.bgDeep, position: 0 }, { color: HP.bg, position: 1 }]) },
+  ];
+  const stars = [];
+  for (let i = 0; i < 90; i++) {
+    const s = 1 + r() * 2.2;
+    stars.push({ id: `hs${i}`, type: "ellipse", x: r() * W, y: r() * 560, width: s, height: s, z: 1, opacity: 0.5,
+      fill: { color: i % 5 === 0 ? HP.primary : HP.text } });
+  }
+  shapes.push(...stars);
+  const polar = (deg, rad) => ({ x: Math.cos((deg * Math.PI) / 180) * rad, y: Math.sin((deg * Math.PI) / 180) * rad });
+  // orbital rings with a travelling highlight segment
+  shapes.push(
+    { id: "ring1", type: "ellipse", x: PC.x, y: PC.y - 120, width: 2700, height: 840, rotation: -8, z: 40, opacity: 0.3,
+      stroke: { color: HP.primary, thickness: 1.2, trim: { start: 0, end: 0.18, offset: 0 } } },
+    { id: "ring2", type: "ellipse", x: PC.x, y: PC.y - 60, width: 2300, height: 620, rotation: -15, z: 40, opacity: 0.22,
+      stroke: { color: HP.accent, thickness: 1, trim: { start: 0, end: 0.12, offset: 0.5 } } },
+  );
+  // launch paths: faint full arcs + bright streaks that travel along them (trimStart chases trimEnd)
+  const tracks = [];
+  const site = polar(-100, R);
+  const paths = [
+    { a: -106, ex: 720, ey: 30 }, { a: -103, ex: 800, ey: 44 }, { a: -100, ex: 880, ey: 70 },
+    { a: -97, ex: 960, ey: 110 }, { a: -104, ex: 640, ey: 20 }, { a: -99, ex: 1040, ey: 150 },
+  ];
+  paths.forEach((pth, i) => {
+    const s0 = polar(pth.a, R), sx = PC.x + s0.x, sy = PC.y + s0.y;
+    const dx = pth.ex - sx, dy = pth.ey - sy, len = Math.hypot(dx, dy), ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+    const nx = -dy / len, ny = dx / len, mx = (sx + pth.ex) / 2 + nx * 34, my = (sy + pth.ey) / 2 + ny * 34;
+    const pts = [{ x: sx, y: sy }, { x: mx, y: my, cubic: { rotation: ang, distance: len * 0.22 } }, { x: pth.ex, y: pth.ey }];
+    shapes.push(
+      { id: `lpFaint${i}`, type: "polygon", x: 0, y: 0, closed: false, z: 50, opacity: 0.22, points: pts, stroke: { color: HP.primary, thickness: 1 } },
+      { id: `lp${i}`, type: "polygon", x: 0, y: 0, closed: false, z: 51, blendMode: "screen", points: pts,
+        stroke: { color: HUD.gradients.primary[0], thickness: 1.8, cap: "round", trim: { start: 0, end: 0 } } },
+      { id: `lpEnd${i}`, type: "ellipse", x: pth.ex, y: pth.ey, width: 4, height: 4, z: 52, opacity: 0.7, fill: { color: HP.text } },
+    );
+    for (const off of [0, LOOP / 2]) {
+      const d = off + i * 42, fly = 110;
+      tracks.push({ target: `lp${i}`, property: "trimEnd", keyframes: [{ frame: off, value: 0 }, { frame: d, value: 0, easing: "hold" }, { frame: d + fly, value: 1, easing: "ease-in-out" }, { frame: off + LOOP / 2 - 1, value: 1 }] },
+        { target: `lp${i}`, property: "trimStart", keyframes: [{ frame: off, value: 0 }, { frame: d + 30, value: 0, easing: "hold" }, { frame: d + fly + 40, value: 1, easing: "ease-in-out" }, { frame: off + LOOP / 2 - 1, value: 1 }] });
+    }
+  });
+  const merge = (list) => {
+    const m = new Map();
+    for (const t of list) { const k = t.target + "|" + t.property; const prev = m.get(k); m.set(k, prev ? { ...prev, keyframes: [...prev.keyframes, ...t.keyframes] } : { ...t, keyframes: [...t.keyframes] }); }
+    return [...m.values()].map((t) => ({ ...t, keyframes: [...new Map(t.keyframes.sort((a, b) => a.frame - b.frame).map((k) => [k.frame, k])).values()] }));
+  };
+  // launch site marker
+  shapes.push(
+    { id: "siteDot", type: "ellipse", x: PC.x + site.x, y: PC.y + site.y, width: 6, height: 6, z: 60, fill: { color: HUD_ORANGE } },
+    { id: "sitePing", type: "ellipse", x: PC.x + site.x, y: PC.y + site.y, width: 18, height: 18, z: 60, stroke: { color: HUD_ORANGE, thickness: 1.5 } },
+    { id: "scan", type: "rect", x: W / 2, y: 0, width: W, height: 2, z: 70, blendMode: "screen", opacity: 0.07, fill: { color: HP.accent } },
+  );
+  const twinkle = stars.map((st) => {
+    const off = Math.floor(r() * (LOOP - 80)), lo = 0.15 + r() * 0.25, hi = 0.6 + r() * 0.4;
+    return { target: st.id, property: "opacity", keyframes: [{ frame: 0, value: lo }, { frame: off, value: lo, easing: "ease-in-out" }, { frame: off + 40, value: hi, easing: "ease-in-out" }, { frame: off + 80, value: lo, easing: "ease-in-out" }, { frame: LOOP, value: lo }] };
+  });
+  const pingT = [0, 90, 180, 270, 360, 450, 540, 630];
+  const backIds = new Set(["space", ...stars.map((st) => st.id)]);
+  const back = {
+    name: "OrbitBack", width: W, height: H, shapes: shapes.filter((sh) => backIds.has(sh.id)),
+    animations: [{ name: "idle", fps: 60, duration: LOOP, loop: "loop", tracks: twinkle }],
+    stateMachine: { name: "OrbitSM", states: [{ name: "idle", animation: "idle" }], transitions: [{ from: "entry", to: "idle" }] },
+  };
+  return [back, {
+    name: "OrbitFront", width: W, height: H, shapes: shapes.filter((sh) => !backIds.has(sh.id)),
+    animations: [{ name: "idle", fps: 60, duration: LOOP, loop: "loop", tracks: [
+      ...merge(tracks),
+      { target: "ring1", property: "trimOffset", keyframes: [{ frame: 0, value: 0 }, { frame: LOOP, value: 1, easing: "linear" }] },
+      { target: "ring2", property: "trimOffset", keyframes: [{ frame: 0, value: 0.5 }, { frame: LOOP, value: -0.5, easing: "linear" }] },
+      { target: "scan", property: "y", keyframes: [{ frame: 0, value: -10 }, { frame: LOOP, value: H + 10, easing: "linear" }] },
+      { target: "sitePing", property: "scaleX", keyframes: pingT.flatMap((f) => [{ frame: f, value: 0.4 }, { frame: f + 80, value: 2.6, easing: "emphasized-decel" }]) },
+      { target: "sitePing", property: "scaleY", keyframes: pingT.flatMap((f) => [{ frame: f, value: 0.4 }, { frame: f + 80, value: 2.6, easing: "emphasized-decel" }]) },
+      { target: "sitePing", property: "opacity", keyframes: pingT.flatMap((f) => [{ frame: f, value: 1 }, { frame: f + 80, value: 0, easing: "ease-out" }]) },
+    ] }],
+    stateMachine: { name: "OrbitSM", states: [{ name: "idle", animation: "idle" }], transitions: [{ from: "entry", to: "idle" }] },
+  }];
+}
+
+const bracket = (id, parent, x, y, sx, sy, arm, color, z, thickness = 2) => ({ id, parent, type: "polygon", x, y, closed: false, z,
+  points: [{ x: 0, y: sy * arm }, { x: 0, y: 0 }, { x: sx * arm, y: 0 }], stroke: { color, thickness, cap: "square", join: "miter" } });
+
+function titleHudArtboard() {
+  const groups = [{ id: "mark", x: W / 2, y: 150 }], shapes = [], texts = [];
+  // logo mark: a chevron apex with a ball in orbit around it
+  shapes.push(
+    { id: "chev", parent: "mark", type: "polygon", x: 0, y: 0, closed: false, z: 10, points: [{ x: -40, y: 32 }, { x: 0, y: -40 }, { x: 40, y: 32 }],
+      stroke: { color: HP.text, thickness: 3, join: "miter", cap: "butt" } },
+    { id: "chevIn", parent: "mark", type: "polygon", x: 0, y: 0, closed: false, z: 10, points: [{ x: -16, y: 32 }, { x: 0, y: 4 }, { x: 16, y: 32 }],
+      stroke: { color: HP.primary, thickness: 2, join: "miter" } },
+    { id: "orbit", parent: "mark", type: "ellipse", x: 0, y: 6, width: 132, height: 36, rotation: -16, z: 9, opacity: 0.55, stroke: { color: HP.primary, thickness: 1.2 } },
+    { id: "orbBall", parent: "mark", type: "ellipse", x: 66, y: 6, width: 9, height: 9, z: 11,
+      fill: { gradient: { type: "radial", start: { x: 0, y: 0 }, end: { x: 5, y: 0 }, stops: [{ color: "#ffffff" }, { color: HP.accent }] } } },
+  );
+  const orbitX = [], orbitY = [], ORB = 240, rot = (-16 * Math.PI) / 180;
+  for (let k = 0; k <= 16; k++) {
+    const t = (k / 16) * Math.PI * 2, ex = Math.cos(t) * 66, ey = Math.sin(t) * 18;
+    orbitX.push({ frame: Math.round((k / 16) * ORB), value: ex * Math.cos(rot) - ey * Math.sin(rot), easing: "linear" });
+    orbitY.push({ frame: Math.round((k / 16) * ORB), value: 6 + ex * Math.sin(rot) + ey * Math.cos(rot), easing: "linear" });
+  }
+  // tracked wordmark, one text per letter so it can cascade in
+  const WORD = "MEGABALL", SIZE = 62, TRACK = 20, widths = [...WORD].map((c) => (MICHROMA[c] / 2048) * SIZE);
+  const total = widths.reduce((a, b) => a + b, 0) + TRACK * (WORD.length - 1);
+  let x = (W - total) / 2;
+  const letters = [];
+  [...WORD].forEach((c, i) => {
+    const id = `w${i}`;
+    groups.push({ id, x: x + widths[i] / 2, y: 262 });
+    texts.push({ id: `${id}t`, parent: id, x: -widths[i] / 2 - 6, y: -46, width: widths[i] + 12, height: 90, align: "center", z: 2100 + i,
+      runs: [{ text: c, fontSize: SIZE, color: HP.text, font: "hudDisplay" }] });
+    letters.push(id);
+    x += widths[i] + TRACK;
+  });
+  const spaced = (t) => [...t].join(" ").replace(/ {3}/g, "     ");
+  texts.push(
+    { id: "sub", x: 0, y: 318, width: W, height: 30, align: "center", z: 2200, runs: [{ text: spaced("BRICK   ARCHIVE"), fontSize: 17, color: HP.textMuted, font: "hudUi" }] },
+    { id: "tag", x: 0, y: 352, width: W, height: 24, align: "center", z: 2201, runs: [{ text: spaced("EVERY BRICK.  ONE BALL.  A BRIGHTER TOMORROW."), fontSize: 11, color: HP.primary, font: "hudUi" }] },
+  );
+  shapes.push(
+    { id: "ruleL", type: "polygon", x: 0, y: 0, closed: false, z: 20, points: [{ x: 350, y: 329 }, { x: 468, y: 329 }], stroke: { color: HP.outline, thickness: 1, trim: { start: 0, end: 0 } } },
+    { id: "ruleR", type: "polygon", x: 0, y: 0, closed: false, z: 20, points: [{ x: 850, y: 329 }, { x: 732, y: 329 }], stroke: { color: HP.outline, thickness: 1, trim: { start: 0, end: 0 } } },
+  );
+  // call-to-action module
+  groups.push({ id: "cta", x: W / 2, y: 520 });
+  shapes.push(
+    { id: "ctaBg", parent: "cta", type: "rect", x: 0, y: 0, width: 420, height: 58, z: 30, fill: { color: alpha(HP.surface, 0.72) } },
+    { id: "ctaLine", parent: "cta", type: "rect", x: 0, y: 0, width: 420, height: 58, z: 31, stroke: { color: alpha(HP.primary, 0.5), thickness: 1 } },
+    { id: "ctaSweep", parent: "cta", type: "rect", x: 0, y: 0, width: 420, height: 58, z: 32, blendMode: "screen", stroke: { color: HP.accent, thickness: 1.5, trim: { start: 0, end: 0.12, offset: 0 } } },
+    bracket("cb0", "cta", -218, -37, 1, 1, 14, HP.accent, 33), bracket("cb1", "cta", 218, -37, -1, 1, 14, HP.accent, 33),
+    bracket("cb2", "cta", -218, 37, 1, -1, 14, HP.accent, 33), bracket("cb3", "cta", 218, 37, -1, -1, 14, HP.accent, 33),
+  );
+  texts.push({ id: "ctaText", parent: "cta", x: -210, y: -14, width: 420, height: 30, align: "center", z: 2300,
+    runs: [{ text: spaced("PRESS SPACE OR CLICK TO LAUNCH"), fontSize: 16, color: HP.text, font: "hudUi" }] });
+  // stat blocks
+  const stats = [["08", "SECTORS"], ["09", "CAPSULE CLASSES"], ["01", "BALL"]];
+  const statIds = [];
+  stats.forEach(([v, l], i) => {
+    const id = `stat${i}`, sx = W / 2 + (i - 1) * 200;
+    groups.push({ id, x: sx, y: 640 });
+    texts.push(
+      { id: `${id}v`, parent: id, x: -90, y: -26, width: 180, height: 40, align: "center", z: 2400 + i, runs: [{ text: v, fontSize: 24, color: i === 1 ? HUD_ORANGE : HP.text, font: "hudDisplay" }] },
+      { id: `${id}l`, parent: id, x: -90, y: 12, width: 180, height: 20, align: "center", z: 2410 + i, runs: [{ text: spaced(l), fontSize: 10, color: HP.textMuted, font: "hudUi" }] },
+    );
+    if (i < 2) shapes.push({ id: `${id}div`, type: "rect", x: sx + 100, y: 646, width: 1, height: 44, z: 20, fill: { color: HP.outline } });
+    statIds.push(id);
+  });
+  texts.push({ id: "controls", x: 0, y: 724, width: W, height: 22, align: "center", z: 2500,
+    runs: [{ text: "MOUSE / ARROWS  MOVE    ·    SPACE / CLICK  LAUNCH & FIRE    ·    P  PAUSE    ·    M  MUSIC    ·    V  VIEW", fontSize: 13, color: HP.textMuted, font: "hudUi" }] });
+  return {
+    name: "TitleHUD", width: W, height: H, groups, shapes, texts,
+    animations: [
+      { name: "intro", fps: 60, duration: 110, loop: "oneShot",
+        presets: [
+          { preset: "pop-in", target: "mark", at: 0 },
+          { preset: "rise-in", targets: letters, at: 10, stagger: 3 },
+          { preset: "fade-in", targets: ["sub", "tag"], at: 38, stagger: 6 },
+          { preset: "rise-in", target: "cta", at: 52 },
+          { preset: "rise-in", targets: statIds, at: 62, stagger: 4 },
+          { preset: "fade-in", target: "controls", at: 80 },
+        ],
+        tracks: [
+          { target: "ruleL", property: "trimEnd", keyframes: [{ frame: 30, value: 0 }, { frame: 70, value: 1, easing: "emphasized-decel" }, { frame: 110, value: 1 }] },
+          { target: "ruleR", property: "trimEnd", keyframes: [{ frame: 30, value: 0 }, { frame: 70, value: 1, easing: "emphasized-decel" }, { frame: 110, value: 1 }] },
+          { target: "orbBall", property: "x", keyframes: orbitX.slice(0, 8).map((k) => ({ ...k, frame: Math.round(k.frame * 110 / 105) })) },
+          { target: "orbBall", property: "y", keyframes: orbitY.slice(0, 8).map((k) => ({ ...k, frame: Math.round(k.frame * 110 / 105) })) },
+        ] },
+      { name: "idle", fps: 60, duration: ORB, loop: "loop",
+        presets: [{ preset: "glow-pulse", target: "ctaText", cycleSeconds: 2 }],
+        tracks: [
+          { target: "orbBall", property: "x", keyframes: orbitX.map((k, i) => ({ ...k, value: orbitX[(i + 7) % 16].value })) },
+          { target: "orbBall", property: "y", keyframes: orbitY.map((k, i) => ({ ...k, value: orbitY[(i + 7) % 16].value })) },
+          { target: "ctaSweep", property: "trimOffset", keyframes: [{ frame: 0, value: 0 }, { frame: ORB, value: 1, easing: "linear" }] },
+          { target: "ruleL", property: "trimEnd", keyframes: [{ frame: 0, value: 1 }, { frame: ORB, value: 1 }] },
+          { target: "ruleR", property: "trimEnd", keyframes: [{ frame: 0, value: 1 }, { frame: ORB, value: 1 }] },
+        ] },
+    ],
+    stateMachine: { name: "TitleSM", states: [{ name: "intro", animation: "intro" }, { name: "idle", animation: "idle" }],
+      transitions: [{ from: "entry", to: "intro" }, { from: "intro", to: "idle", exitTimeMs: 1830 }] },
+  };
+}
+
+function bannerHudArtboard() {
+  const PW = 720, PH = 140;
+  const groups = [{ id: "panel", x: W / 2, y: H / 2 }, { id: "brk", parent: "panel", x: 0, y: 0 }, { id: "headG", parent: "panel", x: 0, y: -6 }, { id: "subG", parent: "panel", x: 0, y: 40 }];
+  const shapes = [
+    { id: "bg", parent: "panel", type: "rect", x: 0, y: 0, width: PW, height: PH, z: 1, fill: { color: alpha(HP.bgDeep, 0.9) } },
+    { id: "edge", parent: "panel", type: "rect", x: 0, y: 0, width: PW, height: PH, z: 2, stroke: { color: alpha(HP.primary, 0.45), thickness: 1 } },
+    { id: "rule", parent: "panel", type: "polygon", x: 0, y: 18, closed: false, z: 3, points: [{ x: -220, y: 0 }, { x: 220, y: 0 }], stroke: { color: HP.outline, thickness: 1, trim: { start: 0, end: 0 } } },
+    bracket("b0", "brk", -PW / 2 - 6, -PH / 2 - 6, 1, 1, 22, HP.accent, 4), bracket("b1", "brk", PW / 2 + 6, -PH / 2 - 6, -1, 1, 22, HP.accent, 4),
+    bracket("b2", "brk", -PW / 2 - 6, PH / 2 + 6, 1, -1, 22, HP.accent, 4), bracket("b3", "brk", PW / 2 + 6, PH / 2 + 6, -1, -1, 22, HP.accent, 4),
+  ];
+  const texts = [
+    { id: "label", parent: "panel", x: -PW / 2 + 18, y: -PH / 2 + 10, width: 300, height: 18, align: "left", z: 2000,
+      runs: [{ text: "S Y S T E M   N O T I C E", fontSize: 10, color: HP.primary, font: "hudUi" }] },
+    { id: "headline", parent: "headG", x: -PW / 2, y: -32, width: PW, height: 60, align: "center", z: 2100,
+      runs: [{ name: "headline", text: "GET READY", fontSize: 38, color: HP.text, font: "hudDisplay" }] },
+    { id: "sub", parent: "subG", x: -PW / 2, y: -12, width: PW, height: 28, align: "center", z: 2101,
+      runs: [{ name: "sub", text: "ROUND 1", fontSize: 17, color: HUD_ORANGE, font: "hudUi" }] },
+  ];
+  const kf = (target, property, frames) => ({ target, property, keyframes: frames.map(([frame, value, easing]) => ({ frame, value, ...(easing ? { easing } : {}) })) });
+  const enter = (o = 0) => [
+    kf("panel", "opacity", [[o, 0], [o + 10, 1, "ease-out"]]),
+    kf("bg", "scaleX", [[o, 0.2], [o + 22, 1, "emphasized-decel"]]),
+    kf("edge", "scaleX", [[o, 0.2], [o + 22, 1, "emphasized-decel"]]),
+    kf("brk", "scaleX", [[o, 1.25], [o + 26, 1, "emphasized-decel"]]),
+    kf("brk", "scaleY", [[o, 1.6], [o + 26, 1, "emphasized-decel"]]),
+    kf("headG", "opacity", [[o, 0], [o + 12, 0, "hold"], [o + 26, 1, "ease-out"]]),
+    kf("headG", "y", [[o, 6], [o + 12, 6, "hold"], [o + 30, -6, "emphasized-decel"]]),
+    kf("rule", "trimEnd", [[o + 14, 0], [o + 38, 1, "emphasized-decel"]]),
+    kf("subG", "opacity", [[o, 0], [o + 22, 0, "hold"], [o + 36, 1, "ease-out"]]),
+  ];
+  const exit = (o) => [
+    kf("panel", "opacity", [[o, 1], [o + 16, 0, "emphasized-accel"]]),
+    kf("bg", "scaleX", [[o, 1], [o + 16, 0.6, "emphasized-accel"]]),
+    kf("edge", "scaleX", [[o, 1], [o + 16, 0.6, "emphasized-accel"]]),
+    kf("brk", "scaleX", [[o, 1], [o + 16, 1.2, "emphasized-accel"]]),
+    kf("brk", "scaleY", [[o, 1], [o + 16, 1.4, "emphasized-accel"]]),
+  ];
+  const merge = (...lists) => {
+    const m = new Map();
+    for (const t of lists.flat()) { const k = t.target + "|" + t.property; const prev = m.get(k); m.set(k, prev ? { ...prev, keyframes: [...prev.keyframes, ...t.keyframes].sort((a, b) => a.frame - b.frame) } : { ...t, keyframes: [...t.keyframes] }); }
+    return [...m.values()];
+  };
+  const HOLD_END = 130;
+  return {
+    name: "BannerHUD", width: W, height: H, groups, shapes, texts,
+    animations: [
+      { name: "hidden", fps: 60, duration: 1, loop: "oneShot", tracks: [kf("panel", "opacity", [[0, 0]]), kf("rule", "trimEnd", [[0, 0]])] },
+      { name: "enter", fps: 60, duration: 44, loop: "oneShot", tracks: enter(0) },
+      { name: "exit", fps: 60, duration: 20, loop: "oneShot", tracks: exit(0) },
+      { name: "flash", fps: 60, duration: HOLD_END + 20, loop: "oneShot", tracks: merge(enter(0), exit(HOLD_END)) },
+    ],
+    stateMachine: {
+      name: "BannerSM",
+      inputs: [{ name: "flash", type: "trigger" }, { name: "enter", type: "trigger" }, { name: "exit", type: "trigger" }],
+      states: [{ name: "hidden", animation: "hidden" }, { name: "flash", animation: "flash" }, { name: "shown", animation: "enter" }, { name: "leaving", animation: "exit" }],
+      transitions: [
+        { from: "entry", to: "hidden" },
+        { from: "any", to: "flash", condition: { input: "flash" } },
+        { from: "any", to: "shown", condition: { input: "enter" } },
+        { from: "any", to: "leaving", condition: { input: "exit" } },
+        { from: "flash", to: "hidden", exitTimeMs: Math.round(((HOLD_END + 20) / 60) * 1000) },
+        { from: "leaving", to: "hidden", exitTimeMs: 340 },
+      ],
+    },
+  };
+}
+
+function hudScene() {
+  return {
+    artboards: [...orbitArtboard(), titleHudArtboard(), bannerHudArtboard()],
+    fonts: [
+      { id: "hudDisplay", path: FONT_HUD_DISPLAY, subset: UPPER },
+      { id: "hudUi", path: FONT_HUD_UI, subset: ANY_TEXT },
+    ],
+  };
+}
+
 // ---------------------------------------------------------------- build
 const fonts = (subsetDisplay, subsetUi) => [
   { id: "display", path: FONT_DISPLAY, ...(subsetDisplay ? { subset: subsetDisplay } : {}) },
@@ -541,7 +812,13 @@ const jobs = [
   { file: "paddle.riv", scene: paddleScene(), previewTime: 0.5 },
   { file: "capsules.riv", scene: { ...(await capsuleScene()), fonts: fonts().slice(0, 1) }, previewTime: 1.2 },
   { file: "banner.riv", scene: { ...bannerScene(), fonts: fonts(UPPER, ANY_TEXT) }, previewTime: 0.5 },
+  { file: "hud.riv", scene: hudScene(), previewTime: 2.5 },
 ];
+// Rive's Canvas2D renderer (@rive-app/canvas-advanced) rasterises blend modes extremely slowly on large
+// canvases: measured 0.8 fps with "screen" shapes vs 120 fps without, which froze the game on its backdrop.
+// Strip them at build time; the glows still read through their alpha gradients.
+const noBlend = (ab) => ({ ...ab, shapes: (ab.shapes ?? []).map(({ blendMode, ...sh }) => sh) });
+for (const j of jobs) j.scene = j.scene.artboards ? { ...j.scene, artboards: j.scene.artboards.map(noBlend) } : noBlend(j.scene);
 const only = process.argv.slice(2);
 for (const j of jobs) {
   if (only.length && !only.some((o) => j.file.startsWith(o))) continue;

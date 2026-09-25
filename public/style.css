@@ -1,7 +1,10 @@
 @font-face { font-family: "Audiowide"; src: url("fonts/Audiowide-Regular.ttf") format("truetype"); font-display: block; }
+@font-face { font-family: "Michroma"; src: url("fonts/Michroma-Regular.ttf") format("truetype"); font-display: block; }
+@font-face { font-family: "Rajdhani"; src: url("fonts/Rajdhani-Medium.ttf") format("truetype"); font-weight: 500; font-display: block; }
+@font-face { font-family: "Rajdhani"; src: url("fonts/Rajdhani-SemiBold.ttf") format("truetype"); font-weight: 600; font-display: block; }
 @font-face { font-family: "InterMB"; src: url("fonts/inter.ttf") format("truetype"); font-display: block; }
 
-:root { --bg: #090811; --text: #e8e7ee; --accent: #16bdfa; }
+:root { --bg: #040a11; --text: #e8e7ee; --accent: #16bdfa; }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
 body { display: grid; place-items: center; touch-action: none; user-select: none; -webkit-user-select: none; }

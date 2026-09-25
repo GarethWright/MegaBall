@@ -10,7 +10,7 @@ python3 -m http.server 8080 -d public
 
 Then open http://localhost:8080. You can also run `npm start`, which uses `http-server`.
 
-**Controls:** move with the mouse, touch, or ← →. Launch the ball and fire lasers with Space or a click. P pauses and M mutes.
+**Controls:** move with the mouse, touch, or ← →. Launch the ball and fire lasers with Space or a click. P pauses, M mutes, and V switches views.
 
 Play online: **https://megaball.puk.me.uk**
 
@@ -24,6 +24,19 @@ npx wrangler@4.40.0 deploy
 
 The version is pinned because the latest Wrangler needs Node 22 or later, and 4.40.0 works on Node 20. On Node 22 you can drop the pin.
 
+## Views
+
+The game plays exactly the same in both views. Switch between them with **V** or the VIEW tabs at the top of the screen.
+
+- **HUD** (the default) is a mission-control interface around a realistic Earth that rotates slowly. It shows:
+  - **Pilot Telemetry:** score, hi-score, round and lives, each with a progress bar, plus the active power-ups and a capsule index
+  - **Event Ledger:** a live log of capsules, detonations, lost balls, speed increases and cleared rounds
+  - **Ball Vector:** the ball's speed and position
+  - **Sector Timeline:** bricks broken per second, plus the current round
+- **ARCADE** is the original synthwave look.
+
+The Earth is a WebGL2 shader in `public/planet.js`. It uses NASA textures (Blue Marble for the surface, Black Marble for city lights, plus a cloud layer) and adds a sunlit terminator, ocean glint and an atmospheric limb. It turns once every 4 minutes.
+
 ## What's Rive and what's canvas
 
 | Layer | Tech | Details |
@@ -33,9 +46,12 @@ The version is pinned because the latest Wrangler needs Node 22 or later, and 4.
 | `paddle.riv` | Rive | `PaddleSM` has 4 layers: **Size** (a 1D blend on a `size` number, used for expand and shrink), **FX** (`hit` trigger that squashes and flashes the paddle), **Laser** (a `laser` bool that raises the cannons) and **Magnet** (a `magnet` bool for catch mode) |
 | `capsules.riv` | Rive | 9 artboards, one per power-up, each with a shine sweep and a rolling label band |
 | `banner.riv` | Rive | `BannerSM` with `flash`, `enter` and `exit` triggers. The `headline` and `sub` text runs are rewritten at runtime |
+| `hud.riv` | Rive | The HUD view's star field (`OrbitBack`), launch paths, orbit rings and launch-site ping (`OrbitFront`), the title (`TitleHUD`) and the banner (`BannerHUD`) |
 | bricks, ball, particles, HUD | Canvas2D | Physics, collisions and levels live in `public/game.js` |
 
-Everything is drawn with the low-level `@rive-app/canvas-advanced` runtime, so there are many artboard instances on two canvases.
+Everything is drawn with the low-level `@rive-app/canvas-advanced` runtime, with many artboard instances spread across three canvases.
+
+The build strips Rive blend modes. The Canvas2D renderer rasterises them very slowly on large canvases: with them the game ran at under 1 fps, and without them at 120 fps.
 
 ## Power-ups
 
@@ -76,5 +92,7 @@ It writes the `.riv` files to `public/rive/`, the scene specs to `rive-src/*.sce
 ## Credits
 
 - Original Megaball © Ed & Al Mackey. This is an unofficial fan tribute.
+- Earth textures: NASA Earth Observatory (Blue Marble, Black Marble and the cloud map), all public domain.
+- Michroma and Rajdhani fonts (SIL OFL 1.1, see `rive-src/*-OFL.txt`).
 - Audiowide font by Astigmatic (SIL OFL 1.1, see `rive-src/Audiowide-OFL.txt`). Inter font (SIL OFL 1.1).
 - Rive runtime © Rive, Inc. (MIT). The `.riv` files were generated with rive-mcp (freeware).
