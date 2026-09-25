@@ -1,0 +1,14 @@
+{
+  "name": "megaball-neo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A modern tribute to the Amiga classic Megaball, with Rive assets generated via rive-mcp",
+  "type": "module",
+  "scripts": {
+    "build:rive": "node tools/build-rive.mjs",
+    "start": "npx --yes http-server public -p 8080 -c-1"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0"
+  }
+}

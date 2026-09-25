@@ -1,0 +1,2638 @@
+{
+ "artboards": [
+  {
+   "name": "CapE",
+   "width": 80,
+   "height": 40,
+   "groups": [
+    {
+     "id": "E_cap",
+     "x": 40,
+     "y": 20
+    }
+   ],
+   "shapes": [
+    {
+     "id": "E_halo",
+     "parent": "E_cap",
+     "type": "ellipse",
+     "x": 0,
+     "y": 0,
+     "width": 84,
+     "height": 44,
+     "z": 1,
+     "blendMode": "screen",
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 42,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#b32ec889",
+         "position": 0
+        },
+        {
+         "color": "#002ec889",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "E_body",
+     "parent": "E_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 2,
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#2ec889",
+         "position": 0
+        },
+        {
+         "color": "#2fbc58",
+         "position": 0.5
+        },
+        {
+         "color": "#4f8d18",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "E_band",
+     "parent": "E_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 26,
+     "height": 24,
+     "z": 3,
+     "opacity": 0.9,
+     "clipBy": "E_body",
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#020c04"
+        },
+        {
+         "color": "#122a16"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "E_shine",
+     "parent": "E_cap",
+     "type": "rect",
+     "x": -40,
+     "y": 0,
+     "width": 10,
+     "height": 40,
+     "rotation": 20,
+     "z": 5,
+     "opacity": 0.55,
+     "blendMode": "screen",
+     "clipBy": "E_body",
+     "fill": {
+      "color": "#e4eae4"
+     }
+    },
+    {
+     "id": "E_hl",
+     "parent": "E_cap",
+     "type": "rect",
+     "x": 0,
+     "y": -7,
+     "width": 46,
+     "height": 3,
+     "cornerRadius": 2,
+     "z": 6,
+     "opacity": 0.45,
+     "fill": {
+      "color": "#e4eae4"
+     }
+    },
+    {
+     "id": "E_rim",
+     "parent": "E_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 7,
+     "stroke": {
+      "color": "#80e4eae4",
+      "thickness": 1.5
+     }
+    }
+   ],
+   "texts": [
+    {
+     "id": "E_letter",
+     "parent": "E_cap",
+     "x": -13,
+     "y": -12,
+     "width": 26,
+     "height": 26,
+     "align": "center",
+     "z": 2100,
+     "runs": [
+      {
+       "text": "E",
+       "fontSize": 17,
+       "color": "#e4eae4",
+       "font": "display"
+      }
+     ]
+    }
+   ],
+   "animations": [
+    {
+     "name": "idle",
+     "fps": 60,
+     "duration": 96,
+     "loop": "loop",
+     "presets": [
+      {
+       "preset": "glow-pulse",
+       "target": "E_halo",
+       "cycleSeconds": 0.8
+      }
+     ],
+     "tracks": [
+      {
+       "target": "E_shine",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -42
+        },
+        {
+         "frame": 56,
+         "value": -42,
+         "easing": "hold"
+        },
+        {
+         "frame": 80,
+         "value": 42,
+         "easing": "smooth"
+        },
+        {
+         "frame": 96,
+         "value": 42
+        }
+       ]
+      },
+      {
+       "target": "E_band",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 24,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 48,
+         "value": 1,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 72,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": 1,
+         "easing": "ease-in-out"
+        }
+       ]
+      },
+      {
+       "target": "E_cap",
+       "property": "rotation",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -4
+        },
+        {
+         "frame": 48,
+         "value": 4,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": -4,
+         "easing": "ease-in-out"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "stateMachine": {
+    "name": "CapSM",
+    "states": [
+     {
+      "name": "idle",
+      "animation": "idle"
+     }
+    ],
+    "transitions": [
+     {
+      "from": "entry",
+      "to": "idle"
+     }
+    ]
+   }
+  },
+  {
+   "name": "CapS",
+   "width": 80,
+   "height": 40,
+   "groups": [
+    {
+     "id": "S_cap",
+     "x": 40,
+     "y": 20
+    }
+   ],
+   "shapes": [
+    {
+     "id": "S_halo",
+     "parent": "S_cap",
+     "type": "ellipse",
+     "x": 0,
+     "y": 0,
+     "width": 84,
+     "height": 44,
+     "z": 1,
+     "blendMode": "screen",
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 42,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#b381a8ff",
+         "position": 0
+        },
+        {
+         "color": "#0081a8ff",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "S_body",
+     "parent": "S_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 2,
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#81a8ff",
+         "position": 0
+        },
+        {
+         "color": "#4ea1fd",
+         "position": 0.5
+        },
+        {
+         "color": "#1583bb",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "S_band",
+     "parent": "S_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 26,
+     "height": 24,
+     "z": 3,
+     "opacity": 0.9,
+     "clipBy": "S_body",
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#020915"
+        },
+        {
+         "color": "#12253b"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "S_shine",
+     "parent": "S_cap",
+     "type": "rect",
+     "x": -40,
+     "y": 0,
+     "width": 10,
+     "height": 40,
+     "rotation": 20,
+     "z": 5,
+     "opacity": 0.55,
+     "blendMode": "screen",
+     "clipBy": "S_body",
+     "fill": {
+      "color": "#e3e8ef"
+     }
+    },
+    {
+     "id": "S_hl",
+     "parent": "S_cap",
+     "type": "rect",
+     "x": 0,
+     "y": -7,
+     "width": 46,
+     "height": 3,
+     "cornerRadius": 2,
+     "z": 6,
+     "opacity": 0.45,
+     "fill": {
+      "color": "#e3e8ef"
+     }
+    },
+    {
+     "id": "S_rim",
+     "parent": "S_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 7,
+     "stroke": {
+      "color": "#80e3e8ef",
+      "thickness": 1.5
+     }
+    }
+   ],
+   "texts": [
+    {
+     "id": "S_letter",
+     "parent": "S_cap",
+     "x": -13,
+     "y": -12,
+     "width": 26,
+     "height": 26,
+     "align": "center",
+     "z": 2100,
+     "runs": [
+      {
+       "text": "S",
+       "fontSize": 17,
+       "color": "#e3e8ef",
+       "font": "display"
+      }
+     ]
+    }
+   ],
+   "animations": [
+    {
+     "name": "idle",
+     "fps": 60,
+     "duration": 96,
+     "loop": "loop",
+     "presets": [
+      {
+       "preset": "glow-pulse",
+       "target": "S_halo",
+       "cycleSeconds": 0.8
+      }
+     ],
+     "tracks": [
+      {
+       "target": "S_shine",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -42
+        },
+        {
+         "frame": 56,
+         "value": -42,
+         "easing": "hold"
+        },
+        {
+         "frame": 80,
+         "value": 42,
+         "easing": "smooth"
+        },
+        {
+         "frame": 96,
+         "value": 42
+        }
+       ]
+      },
+      {
+       "target": "S_band",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 24,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 48,
+         "value": 1,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 72,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": 1,
+         "easing": "ease-in-out"
+        }
+       ]
+      },
+      {
+       "target": "S_cap",
+       "property": "rotation",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -4
+        },
+        {
+         "frame": 48,
+         "value": 4,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": -4,
+         "easing": "ease-in-out"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "stateMachine": {
+    "name": "CapSM",
+    "states": [
+     {
+      "name": "idle",
+      "animation": "idle"
+     }
+    ],
+    "transitions": [
+     {
+      "from": "entry",
+      "to": "idle"
+     }
+    ]
+   }
+  },
+  {
+   "name": "CapC",
+   "width": 80,
+   "height": 40,
+   "groups": [
+    {
+     "id": "C_cap",
+     "x": 40,
+     "y": 20
+    }
+   ],
+   "shapes": [
+    {
+     "id": "C_halo",
+     "parent": "C_cap",
+     "type": "ellipse",
+     "x": 0,
+     "y": 0,
+     "width": 84,
+     "height": 44,
+     "z": 1,
+     "blendMode": "screen",
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 42,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#b329c1c7",
+         "position": 0
+        },
+        {
+         "color": "#0029c1c7",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "C_body",
+     "parent": "C_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 2,
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#29c1c7",
+         "position": 0
+        },
+        {
+         "color": "#19b6aa",
+         "position": 0.5
+        },
+        {
+         "color": "#078f74",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "C_band",
+     "parent": "C_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 26,
+     "height": 24,
+     "z": 3,
+     "opacity": 0.9,
+     "clipBy": "C_body",
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#000c0b"
+        },
+        {
+         "color": "#022b27"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "C_shine",
+     "parent": "C_cap",
+     "type": "rect",
+     "x": -40,
+     "y": 0,
+     "width": 10,
+     "height": 40,
+     "rotation": 20,
+     "z": 5,
+     "opacity": 0.55,
+     "blendMode": "screen",
+     "clipBy": "C_body",
+     "fill": {
+      "color": "#e1eae9"
+     }
+    },
+    {
+     "id": "C_hl",
+     "parent": "C_cap",
+     "type": "rect",
+     "x": 0,
+     "y": -7,
+     "width": 46,
+     "height": 3,
+     "cornerRadius": 2,
+     "z": 6,
+     "opacity": 0.45,
+     "fill": {
+      "color": "#e1eae9"
+     }
+    },
+    {
+     "id": "C_rim",
+     "parent": "C_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 7,
+     "stroke": {
+      "color": "#80e1eae9",
+      "thickness": 1.5
+     }
+    }
+   ],
+   "texts": [
+    {
+     "id": "C_letter",
+     "parent": "C_cap",
+     "x": -13,
+     "y": -12,
+     "width": 26,
+     "height": 26,
+     "align": "center",
+     "z": 2100,
+     "runs": [
+      {
+       "text": "C",
+       "fontSize": 17,
+       "color": "#e1eae9",
+       "font": "display"
+      }
+     ]
+    }
+   ],
+   "animations": [
+    {
+     "name": "idle",
+     "fps": 60,
+     "duration": 96,
+     "loop": "loop",
+     "presets": [
+      {
+       "preset": "glow-pulse",
+       "target": "C_halo",
+       "cycleSeconds": 0.8
+      }
+     ],
+     "tracks": [
+      {
+       "target": "C_shine",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -42
+        },
+        {
+         "frame": 56,
+         "value": -42,
+         "easing": "hold"
+        },
+        {
+         "frame": 80,
+         "value": 42,
+         "easing": "smooth"
+        },
+        {
+         "frame": 96,
+         "value": 42
+        }
+       ]
+      },
+      {
+       "target": "C_band",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 24,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 48,
+         "value": 1,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 72,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": 1,
+         "easing": "ease-in-out"
+        }
+       ]
+      },
+      {
+       "target": "C_cap",
+       "property": "rotation",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -4
+        },
+        {
+         "frame": 48,
+         "value": 4,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": -4,
+         "easing": "ease-in-out"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "stateMachine": {
+    "name": "CapSM",
+    "states": [
+     {
+      "name": "idle",
+      "animation": "idle"
+     }
+    ],
+    "transitions": [
+     {
+      "from": "entry",
+      "to": "idle"
+     }
+    ]
+   }
+  },
+  {
+   "name": "CapL",
+   "width": 80,
+   "height": 40,
+   "groups": [
+    {
+     "id": "L_cap",
+     "x": 40,
+     "y": 20
+    }
+   ],
+   "shapes": [
+    {
+     "id": "L_halo",
+     "parent": "L_cap",
+     "type": "ellipse",
+     "x": 0,
+     "y": 0,
+     "width": 84,
+     "height": 44,
+     "z": 1,
+     "blendMode": "screen",
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 42,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#b3fb8276",
+         "position": 0
+        },
+        {
+         "color": "#00fb8276",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "L_body",
+     "parent": "L_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 2,
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#fb8276",
+         "position": 0
+        },
+        {
+         "color": "#ff6078",
+         "position": 0.5
+        },
+        {
+         "color": "#db0b73",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "L_band",
+     "parent": "L_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 26,
+     "height": 24,
+     "z": 3,
+     "opacity": 0.9,
+     "clipBy": "L_body",
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#130406"
+        },
+        {
+         "color": "#381a1d"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "L_shine",
+     "parent": "L_cap",
+     "type": "rect",
+     "x": -40,
+     "y": 0,
+     "width": 10,
+     "height": 40,
+     "rotation": 20,
+     "z": 5,
+     "opacity": 0.55,
+     "blendMode": "screen",
+     "clipBy": "L_body",
+     "fill": {
+      "color": "#eee5e6"
+     }
+    },
+    {
+     "id": "L_hl",
+     "parent": "L_cap",
+     "type": "rect",
+     "x": 0,
+     "y": -7,
+     "width": 46,
+     "height": 3,
+     "cornerRadius": 2,
+     "z": 6,
+     "opacity": 0.45,
+     "fill": {
+      "color": "#eee5e6"
+     }
+    },
+    {
+     "id": "L_rim",
+     "parent": "L_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 7,
+     "stroke": {
+      "color": "#80eee5e6",
+      "thickness": 1.5
+     }
+    }
+   ],
+   "texts": [
+    {
+     "id": "L_letter",
+     "parent": "L_cap",
+     "x": -13,
+     "y": -12,
+     "width": 26,
+     "height": 26,
+     "align": "center",
+     "z": 2100,
+     "runs": [
+      {
+       "text": "L",
+       "fontSize": 17,
+       "color": "#eee5e6",
+       "font": "display"
+      }
+     ]
+    }
+   ],
+   "animations": [
+    {
+     "name": "idle",
+     "fps": 60,
+     "duration": 96,
+     "loop": "loop",
+     "presets": [
+      {
+       "preset": "glow-pulse",
+       "target": "L_halo",
+       "cycleSeconds": 0.8
+      }
+     ],
+     "tracks": [
+      {
+       "target": "L_shine",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -42
+        },
+        {
+         "frame": 56,
+         "value": -42,
+         "easing": "hold"
+        },
+        {
+         "frame": 80,
+         "value": 42,
+         "easing": "smooth"
+        },
+        {
+         "frame": 96,
+         "value": 42
+        }
+       ]
+      },
+      {
+       "target": "L_band",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 24,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 48,
+         "value": 1,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 72,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": 1,
+         "easing": "ease-in-out"
+        }
+       ]
+      },
+      {
+       "target": "L_cap",
+       "property": "rotation",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -4
+        },
+        {
+         "frame": 48,
+         "value": 4,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": -4,
+         "easing": "ease-in-out"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "stateMachine": {
+    "name": "CapSM",
+    "states": [
+     {
+      "name": "idle",
+      "animation": "idle"
+     }
+    ],
+    "transitions": [
+     {
+      "from": "entry",
+      "to": "idle"
+     }
+    ]
+   }
+  },
+  {
+   "name": "CapM",
+   "width": 80,
+   "height": 40,
+   "groups": [
+    {
+     "id": "M_cap",
+     "x": 40,
+     "y": 20
+    }
+   ],
+   "shapes": [
+    {
+     "id": "M_halo",
+     "parent": "M_cap",
+     "type": "ellipse",
+     "x": 0,
+     "y": 0,
+     "width": 84,
+     "height": 44,
+     "z": 1,
+     "blendMode": "screen",
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 42,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#b3c08eff",
+         "position": 0
+        },
+        {
+         "color": "#00c08eff",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "M_body",
+     "parent": "M_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 2,
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#c08eff",
+         "position": 0
+        },
+        {
+         "color": "#a089fb",
+         "position": 0.5
+        },
+        {
+         "color": "#605efe",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "M_band",
+     "parent": "M_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 26,
+     "height": 24,
+     "z": 3,
+     "opacity": 0.9,
+     "clipBy": "M_body",
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#090714"
+        },
+        {
+         "color": "#241f39"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "M_shine",
+     "parent": "M_cap",
+     "type": "rect",
+     "x": -40,
+     "y": 0,
+     "width": 10,
+     "height": 40,
+     "rotation": 20,
+     "z": 5,
+     "opacity": 0.55,
+     "blendMode": "screen",
+     "clipBy": "M_body",
+     "fill": {
+      "color": "#e8e7ee"
+     }
+    },
+    {
+     "id": "M_hl",
+     "parent": "M_cap",
+     "type": "rect",
+     "x": 0,
+     "y": -7,
+     "width": 46,
+     "height": 3,
+     "cornerRadius": 2,
+     "z": 6,
+     "opacity": 0.45,
+     "fill": {
+      "color": "#e8e7ee"
+     }
+    },
+    {
+     "id": "M_rim",
+     "parent": "M_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 7,
+     "stroke": {
+      "color": "#80e8e7ee",
+      "thickness": 1.5
+     }
+    }
+   ],
+   "texts": [
+    {
+     "id": "M_letter",
+     "parent": "M_cap",
+     "x": -13,
+     "y": -12,
+     "width": 26,
+     "height": 26,
+     "align": "center",
+     "z": 2100,
+     "runs": [
+      {
+       "text": "M",
+       "fontSize": 17,
+       "color": "#e8e7ee",
+       "font": "display"
+      }
+     ]
+    }
+   ],
+   "animations": [
+    {
+     "name": "idle",
+     "fps": 60,
+     "duration": 96,
+     "loop": "loop",
+     "presets": [
+      {
+       "preset": "glow-pulse",
+       "target": "M_halo",
+       "cycleSeconds": 0.8
+      }
+     ],
+     "tracks": [
+      {
+       "target": "M_shine",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -42
+        },
+        {
+         "frame": 56,
+         "value": -42,
+         "easing": "hold"
+        },
+        {
+         "frame": 80,
+         "value": 42,
+         "easing": "smooth"
+        },
+        {
+         "frame": 96,
+         "value": 42
+        }
+       ]
+      },
+      {
+       "target": "M_band",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 24,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 48,
+         "value": 1,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 72,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": 1,
+         "easing": "ease-in-out"
+        }
+       ]
+      },
+      {
+       "target": "M_cap",
+       "property": "rotation",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -4
+        },
+        {
+         "frame": 48,
+         "value": 4,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": -4,
+         "easing": "ease-in-out"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "stateMachine": {
+    "name": "CapSM",
+    "states": [
+     {
+      "name": "idle",
+      "animation": "idle"
+     }
+    ],
+    "transitions": [
+     {
+      "from": "entry",
+      "to": "idle"
+     }
+    ]
+   }
+  },
+  {
+   "name": "CapB",
+   "width": 80,
+   "height": 40,
+   "groups": [
+    {
+     "id": "B_cap",
+     "x": 40,
+     "y": 20
+    }
+   ],
+   "shapes": [
+    {
+     "id": "B_halo",
+     "parent": "B_cap",
+     "type": "ellipse",
+     "x": 0,
+     "y": 0,
+     "width": 84,
+     "height": 44,
+     "z": 1,
+     "blendMode": "screen",
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 42,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#b3f38f0e",
+         "position": 0
+        },
+        {
+         "color": "#00f38f0e",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "B_body",
+     "parent": "B_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 2,
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#f38f0e",
+         "position": 0
+        },
+        {
+         "color": "#ed7a29",
+         "position": 0.5
+        },
+        {
+         "color": "#d04417",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "B_band",
+     "parent": "B_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 26,
+     "height": 24,
+     "z": 3,
+     "opacity": 0.9,
+     "clipBy": "B_body",
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#130601"
+        },
+        {
+         "color": "#361d0d"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "B_shine",
+     "parent": "B_cap",
+     "type": "rect",
+     "x": -40,
+     "y": 0,
+     "width": 10,
+     "height": 40,
+     "rotation": 20,
+     "z": 5,
+     "opacity": 0.55,
+     "blendMode": "screen",
+     "clipBy": "B_body",
+     "fill": {
+      "color": "#eee6e2"
+     }
+    },
+    {
+     "id": "B_hl",
+     "parent": "B_cap",
+     "type": "rect",
+     "x": 0,
+     "y": -7,
+     "width": 46,
+     "height": 3,
+     "cornerRadius": 2,
+     "z": 6,
+     "opacity": 0.45,
+     "fill": {
+      "color": "#eee6e2"
+     }
+    },
+    {
+     "id": "B_rim",
+     "parent": "B_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 7,
+     "stroke": {
+      "color": "#80eee6e2",
+      "thickness": 1.5
+     }
+    }
+   ],
+   "texts": [
+    {
+     "id": "B_letter",
+     "parent": "B_cap",
+     "x": -13,
+     "y": -12,
+     "width": 26,
+     "height": 26,
+     "align": "center",
+     "z": 2100,
+     "runs": [
+      {
+       "text": "B",
+       "fontSize": 17,
+       "color": "#eee6e2",
+       "font": "display"
+      }
+     ]
+    }
+   ],
+   "animations": [
+    {
+     "name": "idle",
+     "fps": 60,
+     "duration": 96,
+     "loop": "loop",
+     "presets": [
+      {
+       "preset": "glow-pulse",
+       "target": "B_halo",
+       "cycleSeconds": 0.8
+      }
+     ],
+     "tracks": [
+      {
+       "target": "B_shine",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -42
+        },
+        {
+         "frame": 56,
+         "value": -42,
+         "easing": "hold"
+        },
+        {
+         "frame": 80,
+         "value": 42,
+         "easing": "smooth"
+        },
+        {
+         "frame": 96,
+         "value": 42
+        }
+       ]
+      },
+      {
+       "target": "B_band",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 24,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 48,
+         "value": 1,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 72,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": 1,
+         "easing": "ease-in-out"
+        }
+       ]
+      },
+      {
+       "target": "B_cap",
+       "property": "rotation",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -4
+        },
+        {
+         "frame": 48,
+         "value": 4,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": -4,
+         "easing": "ease-in-out"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "stateMachine": {
+    "name": "CapSM",
+    "states": [
+     {
+      "name": "idle",
+      "animation": "idle"
+     }
+    ],
+    "transitions": [
+     {
+      "from": "entry",
+      "to": "idle"
+     }
+    ]
+   }
+  },
+  {
+   "name": "CapP",
+   "width": 80,
+   "height": 40,
+   "groups": [
+    {
+     "id": "P_cap",
+     "x": 40,
+     "y": 20
+    }
+   ],
+   "shapes": [
+    {
+     "id": "P_halo",
+     "parent": "P_cap",
+     "type": "ellipse",
+     "x": 0,
+     "y": 0,
+     "width": 84,
+     "height": 44,
+     "z": 1,
+     "blendMode": "screen",
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 42,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#b3c3ab1f",
+         "position": 0
+        },
+        {
+         "color": "#00c3ab1f",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "P_body",
+     "parent": "P_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 2,
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#c3ab1f",
+         "position": 0
+        },
+        {
+         "color": "#c39721",
+         "position": 0.5
+        },
+        {
+         "color": "#a36e1a",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "P_band",
+     "parent": "P_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 26,
+     "height": 24,
+     "z": 3,
+     "opacity": 0.9,
+     "clipBy": "P_body",
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#0e0800"
+        },
+        {
+         "color": "#2e2204"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "P_shine",
+     "parent": "P_cap",
+     "type": "rect",
+     "x": -40,
+     "y": 0,
+     "width": 10,
+     "height": 40,
+     "rotation": 20,
+     "z": 5,
+     "opacity": 0.55,
+     "blendMode": "screen",
+     "clipBy": "P_body",
+     "fill": {
+      "color": "#ebe7e0"
+     }
+    },
+    {
+     "id": "P_hl",
+     "parent": "P_cap",
+     "type": "rect",
+     "x": 0,
+     "y": -7,
+     "width": 46,
+     "height": 3,
+     "cornerRadius": 2,
+     "z": 6,
+     "opacity": 0.45,
+     "fill": {
+      "color": "#ebe7e0"
+     }
+    },
+    {
+     "id": "P_rim",
+     "parent": "P_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 7,
+     "stroke": {
+      "color": "#80ebe7e0",
+      "thickness": 1.5
+     }
+    }
+   ],
+   "texts": [
+    {
+     "id": "P_letter",
+     "parent": "P_cap",
+     "x": -13,
+     "y": -12,
+     "width": 26,
+     "height": 26,
+     "align": "center",
+     "z": 2100,
+     "runs": [
+      {
+       "text": "P",
+       "fontSize": 17,
+       "color": "#ebe7e0",
+       "font": "display"
+      }
+     ]
+    }
+   ],
+   "animations": [
+    {
+     "name": "idle",
+     "fps": 60,
+     "duration": 96,
+     "loop": "loop",
+     "presets": [
+      {
+       "preset": "glow-pulse",
+       "target": "P_halo",
+       "cycleSeconds": 0.8
+      }
+     ],
+     "tracks": [
+      {
+       "target": "P_shine",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -42
+        },
+        {
+         "frame": 56,
+         "value": -42,
+         "easing": "hold"
+        },
+        {
+         "frame": 80,
+         "value": 42,
+         "easing": "smooth"
+        },
+        {
+         "frame": 96,
+         "value": 42
+        }
+       ]
+      },
+      {
+       "target": "P_band",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 24,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 48,
+         "value": 1,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 72,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": 1,
+         "easing": "ease-in-out"
+        }
+       ]
+      },
+      {
+       "target": "P_cap",
+       "property": "rotation",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -4
+        },
+        {
+         "frame": 48,
+         "value": 4,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": -4,
+         "easing": "ease-in-out"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "stateMachine": {
+    "name": "CapSM",
+    "states": [
+     {
+      "name": "idle",
+      "animation": "idle"
+     }
+    ],
+    "transitions": [
+     {
+      "from": "entry",
+      "to": "idle"
+     }
+    ]
+   }
+  },
+  {
+   "name": "CapX",
+   "width": 80,
+   "height": 40,
+   "groups": [
+    {
+     "id": "X_cap",
+     "x": 40,
+     "y": 20
+    }
+   ],
+   "shapes": [
+    {
+     "id": "X_halo",
+     "parent": "X_cap",
+     "type": "ellipse",
+     "x": 0,
+     "y": 0,
+     "width": 84,
+     "height": 44,
+     "z": 1,
+     "blendMode": "screen",
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 42,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#b3a8a9bb",
+         "position": 0
+        },
+        {
+         "color": "#00a8a9bb",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "X_body",
+     "parent": "X_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 2,
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#a8a9bb",
+         "position": 0
+        },
+        {
+         "color": "#999eaf",
+         "position": 0.5
+        },
+        {
+         "color": "#707b8b",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "X_band",
+     "parent": "X_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 26,
+     "height": 24,
+     "z": 3,
+     "opacity": 0.9,
+     "clipBy": "X_body",
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#07090f"
+        },
+        {
+         "color": "#202330"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "X_shine",
+     "parent": "X_cap",
+     "type": "rect",
+     "x": -40,
+     "y": 0,
+     "width": 10,
+     "height": 40,
+     "rotation": 20,
+     "z": 5,
+     "opacity": 0.55,
+     "blendMode": "screen",
+     "clipBy": "X_body",
+     "fill": {
+      "color": "#e5e8ef"
+     }
+    },
+    {
+     "id": "X_hl",
+     "parent": "X_cap",
+     "type": "rect",
+     "x": 0,
+     "y": -7,
+     "width": 46,
+     "height": 3,
+     "cornerRadius": 2,
+     "z": 6,
+     "opacity": 0.45,
+     "fill": {
+      "color": "#e5e8ef"
+     }
+    },
+    {
+     "id": "X_rim",
+     "parent": "X_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 7,
+     "stroke": {
+      "color": "#e6fd838d",
+      "thickness": 2
+     }
+    }
+   ],
+   "texts": [
+    {
+     "id": "X_letter",
+     "parent": "X_cap",
+     "x": -13,
+     "y": -12,
+     "width": 26,
+     "height": 26,
+     "align": "center",
+     "z": 2100,
+     "runs": [
+      {
+       "text": "X",
+       "fontSize": 17,
+       "color": "#fd838d",
+       "font": "display"
+      }
+     ]
+    }
+   ],
+   "animations": [
+    {
+     "name": "idle",
+     "fps": 60,
+     "duration": 96,
+     "loop": "loop",
+     "presets": [
+      {
+       "preset": "glow-pulse",
+       "target": "X_halo",
+       "cycleSeconds": 0.8
+      }
+     ],
+     "tracks": [
+      {
+       "target": "X_shine",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -42
+        },
+        {
+         "frame": 56,
+         "value": -42,
+         "easing": "hold"
+        },
+        {
+         "frame": 80,
+         "value": 42,
+         "easing": "smooth"
+        },
+        {
+         "frame": 96,
+         "value": 42
+        }
+       ]
+      },
+      {
+       "target": "X_band",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 24,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 48,
+         "value": 1,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 72,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": 1,
+         "easing": "ease-in-out"
+        }
+       ]
+      },
+      {
+       "target": "X_cap",
+       "property": "rotation",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -4
+        },
+        {
+         "frame": 48,
+         "value": 4,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": -4,
+         "easing": "ease-in-out"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "stateMachine": {
+    "name": "CapSM",
+    "states": [
+     {
+      "name": "idle",
+      "animation": "idle"
+     }
+    ],
+    "transitions": [
+     {
+      "from": "entry",
+      "to": "idle"
+     }
+    ]
+   }
+  },
+  {
+   "name": "CapF",
+   "width": 80,
+   "height": 40,
+   "groups": [
+    {
+     "id": "F_cap",
+     "x": 40,
+     "y": 20
+    }
+   ],
+   "shapes": [
+    {
+     "id": "F_halo",
+     "parent": "F_cap",
+     "type": "ellipse",
+     "x": 0,
+     "y": 0,
+     "width": 84,
+     "height": 44,
+     "z": 1,
+     "blendMode": "screen",
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 42,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#b3f2897d",
+         "position": 0
+        },
+        {
+         "color": "#00f2897d",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "F_body",
+     "parent": "F_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 2,
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#f2897d",
+         "position": 0
+        },
+        {
+         "color": "#e37a84",
+         "position": 0.5
+        },
+        {
+         "color": "#bc5075",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "F_band",
+     "parent": "F_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 26,
+     "height": 24,
+     "z": 3,
+     "opacity": 0.9,
+     "clipBy": "F_body",
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -12
+       },
+       "end": {
+        "x": 0,
+        "y": 12
+       },
+       "stops": [
+        {
+         "color": "#0f0707"
+        },
+        {
+         "color": "#2f1f20"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "F_shine",
+     "parent": "F_cap",
+     "type": "rect",
+     "x": -40,
+     "y": 0,
+     "width": 10,
+     "height": 40,
+     "rotation": 20,
+     "z": 5,
+     "opacity": 0.55,
+     "blendMode": "screen",
+     "clipBy": "F_body",
+     "fill": {
+      "color": "#eee5e6"
+     }
+    },
+    {
+     "id": "F_hl",
+     "parent": "F_cap",
+     "type": "rect",
+     "x": 0,
+     "y": -7,
+     "width": 46,
+     "height": 3,
+     "cornerRadius": 2,
+     "z": 6,
+     "opacity": 0.45,
+     "fill": {
+      "color": "#eee5e6"
+     }
+    },
+    {
+     "id": "F_rim",
+     "parent": "F_cap",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 60,
+     "height": 24,
+     "cornerRadius": 12,
+     "z": 7,
+     "stroke": {
+      "color": "#e6fd838d",
+      "thickness": 2
+     }
+    }
+   ],
+   "texts": [
+    {
+     "id": "F_letter",
+     "parent": "F_cap",
+     "x": -13,
+     "y": -12,
+     "width": 26,
+     "height": 26,
+     "align": "center",
+     "z": 2100,
+     "runs": [
+      {
+       "text": "F",
+       "fontSize": 17,
+       "color": "#fd838d",
+       "font": "display"
+      }
+     ]
+    }
+   ],
+   "animations": [
+    {
+     "name": "idle",
+     "fps": 60,
+     "duration": 96,
+     "loop": "loop",
+     "presets": [
+      {
+       "preset": "glow-pulse",
+       "target": "F_halo",
+       "cycleSeconds": 0.8
+      }
+     ],
+     "tracks": [
+      {
+       "target": "F_shine",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -42
+        },
+        {
+         "frame": 56,
+         "value": -42,
+         "easing": "hold"
+        },
+        {
+         "frame": 80,
+         "value": 42,
+         "easing": "smooth"
+        },
+        {
+         "frame": 96,
+         "value": 42
+        }
+       ]
+      },
+      {
+       "target": "F_band",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 24,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 48,
+         "value": 1,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 72,
+         "value": 0.55,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": 1,
+         "easing": "ease-in-out"
+        }
+       ]
+      },
+      {
+       "target": "F_cap",
+       "property": "rotation",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -4
+        },
+        {
+         "frame": 48,
+         "value": 4,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 96,
+         "value": -4,
+         "easing": "ease-in-out"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "stateMachine": {
+    "name": "CapSM",
+    "states": [
+     {
+      "name": "idle",
+      "animation": "idle"
+     }
+    ],
+    "transitions": [
+     {
+      "from": "entry",
+      "to": "idle"
+     }
+    ]
+   }
+  }
+ ],
+ "fonts": [
+  {
+   "id": "display",
+   "path": "/Users/garethwright/repos/Megaball/rive-src/Audiowide-Regular.ttf"
+  }
+ ]
+}

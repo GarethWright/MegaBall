@@ -1,0 +1,66 @@
+# Megaball Neo
+
+A modern tribute to **Megaball** (Ed & Al Mackey, Amiga, 1991): a synthwave-style brick breaker whose animated parts are live **Rive** state machines generated with [rive-mcp](https://github.com/ODU33104/rive-mcp). No Rive editor was used.
+
+## Run
+
+```bash
+python3 -m http.server 8080 -d public
+```
+
+Then open http://localhost:8080. You can also run `npm start`, which uses `http-server`.
+
+**Controls:** move with the mouse, touch, or ← →. Launch the ball and fire lasers with Space or a click. P pauses and M mutes.
+
+## What's Rive and what's canvas
+
+| Layer | Tech | Details |
+|---|---|---|
+| `backdrop.riv` | Rive | Synthwave sun (multi-contour clip mask), Amiga "copper bars", twinkling stars, a perspective grid that scrolls toward you |
+| `title.riv` | Rive | Pop-cascade logo, a ball that hops from letter to letter and squashes each one, a rainbow brick strip, and an `intro → idle` state machine |
+| `paddle.riv` | Rive | `PaddleSM` has 4 layers: **Size** (a 1D blend on a `size` number, used for expand and shrink), **FX** (`hit` trigger that squashes and flashes the paddle), **Laser** (a `laser` bool that raises the cannons) and **Magnet** (a `magnet` bool for catch mode) |
+| `capsules.riv` | Rive | 9 artboards, one per power-up, each with a shine sweep and a rolling label band |
+| `banner.riv` | Rive | `BannerSM` with `flash`, `enter` and `exit` triggers. The `headline` and `sub` text runs are rewritten at runtime |
+| bricks, ball, particles, HUD | Canvas2D | Physics, collisions and levels live in `public/game.js` |
+
+Everything is drawn with the low-level `@rive-app/canvas-advanced` runtime, so there are many artboard instances on two canvases.
+
+## Power-ups
+
+**E** Expand · **S** Slow · **C** Catch · **L** Laser · **M** Multiball · **B** Mega ball (smashes through bricks) · **P** Extra life. Two are bad: **X** Shrink and **F** Fast.
+
+Bricks come in these kinds: rainbow, silver (takes several hits), gold (indestructible), ✸ explosive (chain reaction), and ? mystery (always drops a capsule). There are 8 rounds, and they loop at a higher speed.
+
+## Music
+
+`public/music.js` is a small tracker engine built on WebAudio, in the style of the Amiga original. These are new compositions, not the original tunes:
+
+- 4 channels panned hard left and right the way the Amiga's Paula chip does it
+- 16th-note pattern rows
+- chip arpeggios that change note on every tick
+- a pulse-wave lead with delayed vibrato and echo
+- the Amiga's ~3.3 kHz "LED" low-pass filter on the mix
+
+There are two songs: **Neon Horizon** plays on the title screen and **Brick Runner** plays in game. Browsers only allow audio after you interact with the page, so on the title screen press **M** to start the music. Starting a game also starts it.
+
+## Rebuilding the Rive assets
+
+```bash
+npm i -g rive-mcp-server
+npm install
+npm run build:rive              # or: node tools/build-rive.mjs paddle banner
+```
+
+`tools/build-rive.mjs` connects to the `rive-mcp` server over MCP stdio. It follows the server's recommended workflow:
+
+1. `riv_design_tokens`: builds the OKLCH palette and the rainbow hues for the bricks.
+2. `riv_create`: generates each file from scene specs that use motion presets.
+3. `riv_lint`: checks the output.
+
+It writes the `.riv` files to `public/rive/`, the scene specs to `rive-src/*.scene.json`, and preview PNGs to `rive-src/previews/`.
+
+## Credits
+
+- Original Megaball © Ed & Al Mackey. This is an unofficial fan tribute.
+- Audiowide font by Astigmatic (SIL OFL 1.1, see `rive-src/Audiowide-OFL.txt`). Inter font (SIL OFL 1.1).
+- Rive runtime © Rive, Inc. (MIT). The `.riv` files were generated with rive-mcp (freeware).

@@ -1,0 +1,905 @@
+{
+ "artboard": {
+  "name": "Banner",
+  "width": 1200,
+  "height": 800
+ },
+ "groups": [
+  {
+   "id": "banner",
+   "x": 600,
+   "y": 400
+  },
+  {
+   "id": "headG",
+   "parent": "banner",
+   "x": 0,
+   "y": -8
+  },
+  {
+   "id": "subG",
+   "parent": "banner",
+   "x": 0,
+   "y": 44
+  }
+ ],
+ "shapes": [
+  {
+   "id": "band",
+   "parent": "banner",
+   "type": "rect",
+   "x": 0,
+   "y": 0,
+   "width": 1200,
+   "height": 150,
+   "z": 1,
+   "fill": {
+    "gradient": {
+     "type": "linear",
+     "start": {
+      "x": -600,
+      "y": 0
+     },
+     "end": {
+      "x": 600,
+      "y": 0
+     },
+     "stops": [
+      {
+       "color": "#00090811",
+       "position": 0
+      },
+      {
+       "color": "#eb242132",
+       "position": 0.25
+      },
+      {
+       "color": "#eb242132",
+       "position": 0.75
+      },
+      {
+       "color": "#00090811",
+       "position": 1
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "lineT",
+   "parent": "banner",
+   "type": "polygon",
+   "x": 0,
+   "y": -75,
+   "closed": false,
+   "z": 2,
+   "points": [
+    {
+     "x": -480,
+     "y": 0
+    },
+    {
+     "x": 480,
+     "y": 0
+    }
+   ],
+   "stroke": {
+    "color": "#16bdfa",
+    "thickness": 2,
+    "cap": "round",
+    "trim": {
+     "start": 0,
+     "end": 0
+    }
+   }
+  },
+  {
+   "id": "lineB",
+   "parent": "banner",
+   "type": "polygon",
+   "x": 0,
+   "y": 75,
+   "closed": false,
+   "z": 2,
+   "points": [
+    {
+     "x": 480,
+     "y": 0
+    },
+    {
+     "x": -480,
+     "y": 0
+    }
+   ],
+   "stroke": {
+    "color": "#a088fc",
+    "thickness": 2,
+    "cap": "round",
+    "trim": {
+     "start": 0,
+     "end": 0
+    }
+   }
+  }
+ ],
+ "texts": [
+  {
+   "id": "headline",
+   "parent": "headG",
+   "x": -600,
+   "y": -42,
+   "width": 1200,
+   "height": 80,
+   "align": "center",
+   "z": 2100,
+   "runs": [
+    {
+     "name": "headline",
+     "text": "GET READY",
+     "fontSize": 60,
+     "color": "#e8e7ee",
+     "font": "display"
+    }
+   ]
+  },
+  {
+   "id": "sub",
+   "parent": "subG",
+   "x": -600,
+   "y": -14,
+   "width": 1200,
+   "height": 34,
+   "align": "center",
+   "z": 2101,
+   "runs": [
+    {
+     "name": "sub",
+     "text": "ROUND 1",
+     "fontSize": 20,
+     "color": "#16bdfa",
+     "font": "ui"
+    }
+   ]
+  }
+ ],
+ "animations": [
+  {
+   "name": "hidden",
+   "fps": 60,
+   "duration": 1,
+   "loop": "oneShot",
+   "tracks": [
+    {
+     "target": "band",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      }
+     ]
+    },
+    {
+     "target": "headG",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      }
+     ]
+    },
+    {
+     "target": "subG",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      }
+     ]
+    },
+    {
+     "target": "lineT",
+     "property": "trimEnd",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      }
+     ]
+    },
+    {
+     "target": "lineB",
+     "property": "trimEnd",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      }
+     ]
+    },
+    {
+     "target": "lineT",
+     "property": "trimStart",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      }
+     ]
+    },
+    {
+     "target": "lineB",
+     "property": "trimStart",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "enter",
+   "fps": 60,
+   "duration": 44,
+   "loop": "oneShot",
+   "tracks": [
+    {
+     "target": "band",
+     "property": "scaleY",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 22,
+       "value": 1,
+       "easing": "ease-out-back"
+      }
+     ]
+    },
+    {
+     "target": "band",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 10,
+       "value": 1,
+       "easing": "ease-out"
+      }
+     ]
+    },
+    {
+     "target": "lineT",
+     "property": "trimEnd",
+     "keyframes": [
+      {
+       "frame": 6,
+       "value": 0
+      },
+      {
+       "frame": 34,
+       "value": 1,
+       "easing": "emphasized-decel"
+      }
+     ]
+    },
+    {
+     "target": "lineB",
+     "property": "trimEnd",
+     "keyframes": [
+      {
+       "frame": 10,
+       "value": 0
+      },
+      {
+       "frame": 38,
+       "value": 1,
+       "easing": "emphasized-decel"
+      }
+     ]
+    },
+    {
+     "target": "headG",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 8,
+       "value": 0,
+       "easing": "hold"
+      },
+      {
+       "frame": 22,
+       "value": 1,
+       "easing": "ease-out"
+      }
+     ]
+    },
+    {
+     "target": "headG",
+     "property": "scaleX",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0.6
+      },
+      {
+       "frame": 8,
+       "value": 0.6,
+       "easing": "hold"
+      },
+      {
+       "frame": 40,
+       "value": 1,
+       "easing": "elastic-out"
+      }
+     ]
+    },
+    {
+     "target": "headG",
+     "property": "scaleY",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0.6
+      },
+      {
+       "frame": 8,
+       "value": 0.6,
+       "easing": "hold"
+      },
+      {
+       "frame": 40,
+       "value": 1,
+       "easing": "elastic-out"
+      }
+     ]
+    },
+    {
+     "target": "subG",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 18,
+       "value": 0,
+       "easing": "hold"
+      },
+      {
+       "frame": 34,
+       "value": 1,
+       "easing": "ease-out"
+      }
+     ]
+    },
+    {
+     "target": "subG",
+     "property": "y",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 64
+      },
+      {
+       "frame": 18,
+       "value": 64,
+       "easing": "hold"
+      },
+      {
+       "frame": 40,
+       "value": 44,
+       "easing": "emphasized-decel"
+      }
+     ]
+    },
+    {
+     "target": "lineT",
+     "property": "trimStart",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      }
+     ]
+    },
+    {
+     "target": "lineB",
+     "property": "trimStart",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "exit",
+   "fps": 60,
+   "duration": 20,
+   "loop": "oneShot",
+   "tracks": [
+    {
+     "target": "band",
+     "property": "scaleY",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 1
+      },
+      {
+       "frame": 18,
+       "value": 0,
+       "easing": "emphasized-accel"
+      }
+     ]
+    },
+    {
+     "target": "band",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 8,
+       "value": 1
+      },
+      {
+       "frame": 18,
+       "value": 0,
+       "easing": "ease-in"
+      }
+     ]
+    },
+    {
+     "target": "lineT",
+     "property": "trimStart",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 16,
+       "value": 1,
+       "easing": "emphasized-accel"
+      }
+     ]
+    },
+    {
+     "target": "lineB",
+     "property": "trimStart",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 16,
+       "value": 1,
+       "easing": "emphasized-accel"
+      }
+     ]
+    },
+    {
+     "target": "headG",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 1
+      },
+      {
+       "frame": 14,
+       "value": 0,
+       "easing": "emphasized-accel"
+      }
+     ]
+    },
+    {
+     "target": "headG",
+     "property": "scaleX",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 1
+      },
+      {
+       "frame": 14,
+       "value": 1.25,
+       "easing": "emphasized-accel"
+      }
+     ]
+    },
+    {
+     "target": "headG",
+     "property": "scaleY",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 1
+      },
+      {
+       "frame": 14,
+       "value": 1.25,
+       "easing": "emphasized-accel"
+      }
+     ]
+    },
+    {
+     "target": "subG",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 1
+      },
+      {
+       "frame": 10,
+       "value": 0,
+       "easing": "ease-in"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "flash",
+   "fps": 60,
+   "duration": 150,
+   "loop": "oneShot",
+   "tracks": [
+    {
+     "target": "band",
+     "property": "scaleY",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 22,
+       "value": 1,
+       "easing": "ease-out-back"
+      },
+      {
+       "frame": 130,
+       "value": 1
+      },
+      {
+       "frame": 148,
+       "value": 0,
+       "easing": "emphasized-accel"
+      }
+     ]
+    },
+    {
+     "target": "band",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 10,
+       "value": 1,
+       "easing": "ease-out"
+      },
+      {
+       "frame": 138,
+       "value": 1
+      },
+      {
+       "frame": 148,
+       "value": 0,
+       "easing": "ease-in"
+      }
+     ]
+    },
+    {
+     "target": "lineT",
+     "property": "trimEnd",
+     "keyframes": [
+      {
+       "frame": 6,
+       "value": 0
+      },
+      {
+       "frame": 34,
+       "value": 1,
+       "easing": "emphasized-decel"
+      }
+     ]
+    },
+    {
+     "target": "lineB",
+     "property": "trimEnd",
+     "keyframes": [
+      {
+       "frame": 10,
+       "value": 0
+      },
+      {
+       "frame": 38,
+       "value": 1,
+       "easing": "emphasized-decel"
+      }
+     ]
+    },
+    {
+     "target": "headG",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 8,
+       "value": 0,
+       "easing": "hold"
+      },
+      {
+       "frame": 22,
+       "value": 1,
+       "easing": "ease-out"
+      },
+      {
+       "frame": 130,
+       "value": 1
+      },
+      {
+       "frame": 144,
+       "value": 0,
+       "easing": "emphasized-accel"
+      }
+     ]
+    },
+    {
+     "target": "headG",
+     "property": "scaleX",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0.6
+      },
+      {
+       "frame": 8,
+       "value": 0.6,
+       "easing": "hold"
+      },
+      {
+       "frame": 40,
+       "value": 1,
+       "easing": "elastic-out"
+      },
+      {
+       "frame": 130,
+       "value": 1
+      },
+      {
+       "frame": 144,
+       "value": 1.25,
+       "easing": "emphasized-accel"
+      }
+     ]
+    },
+    {
+     "target": "headG",
+     "property": "scaleY",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0.6
+      },
+      {
+       "frame": 8,
+       "value": 0.6,
+       "easing": "hold"
+      },
+      {
+       "frame": 40,
+       "value": 1,
+       "easing": "elastic-out"
+      },
+      {
+       "frame": 130,
+       "value": 1
+      },
+      {
+       "frame": 144,
+       "value": 1.25,
+       "easing": "emphasized-accel"
+      }
+     ]
+    },
+    {
+     "target": "subG",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 18,
+       "value": 0,
+       "easing": "hold"
+      },
+      {
+       "frame": 34,
+       "value": 1,
+       "easing": "ease-out"
+      },
+      {
+       "frame": 130,
+       "value": 1
+      },
+      {
+       "frame": 140,
+       "value": 0,
+       "easing": "ease-in"
+      }
+     ]
+    },
+    {
+     "target": "subG",
+     "property": "y",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 64
+      },
+      {
+       "frame": 18,
+       "value": 64,
+       "easing": "hold"
+      },
+      {
+       "frame": 40,
+       "value": 44,
+       "easing": "emphasized-decel"
+      }
+     ]
+    },
+    {
+     "target": "lineT",
+     "property": "trimStart",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 130,
+       "value": 0
+      },
+      {
+       "frame": 146,
+       "value": 1,
+       "easing": "emphasized-accel"
+      }
+     ]
+    },
+    {
+     "target": "lineB",
+     "property": "trimStart",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 130,
+       "value": 0
+      },
+      {
+       "frame": 146,
+       "value": 1,
+       "easing": "emphasized-accel"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "stateMachine": {
+  "name": "BannerSM",
+  "inputs": [
+   {
+    "name": "flash",
+    "type": "trigger"
+   },
+   {
+    "name": "enter",
+    "type": "trigger"
+   },
+   {
+    "name": "exit",
+    "type": "trigger"
+   }
+  ],
+  "states": [
+   {
+    "name": "hidden",
+    "animation": "hidden"
+   },
+   {
+    "name": "flash",
+    "animation": "flash"
+   },
+   {
+    "name": "shown",
+    "animation": "enter"
+   },
+   {
+    "name": "leaving",
+    "animation": "exit"
+   }
+  ],
+  "transitions": [
+   {
+    "from": "entry",
+    "to": "hidden"
+   },
+   {
+    "from": "any",
+    "to": "flash",
+    "condition": {
+     "input": "flash"
+    }
+   },
+   {
+    "from": "any",
+    "to": "shown",
+    "condition": {
+     "input": "enter"
+    }
+   },
+   {
+    "from": "any",
+    "to": "leaving",
+    "condition": {
+     "input": "exit"
+    }
+   },
+   {
+    "from": "flash",
+    "to": "hidden",
+    "exitTimeMs": 2500
+   },
+   {
+    "from": "leaving",
+    "to": "hidden",
+    "exitTimeMs": 340
+   }
+  ]
+ },
+ "fonts": [
+  {
+   "id": "display",
+   "path": "/Users/garethwright/repos/Megaball/rive-src/Audiowide-Regular.ttf",
+   "subset": "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !?.:-'&/+,%×·←→"
+  },
+  {
+   "id": "ui",
+   "path": "/Users/garethwright/repos/Megaball/rive-src/inter.ttf",
+   "subset": "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !?.:-'&/+,%×·←→abcdefghijklmnopqrstuvwxyz"
+  }
+ ]
+}
