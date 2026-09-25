@@ -1,0 +1,2 @@
+@rive-app/canvas-advanced 2.43.1 — Copyright (c) Rive, Inc. — MIT License
+https://github.com/rive-app/rive-wasm/blob/master/LICENSE

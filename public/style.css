@@ -24,3 +24,74 @@ body { display: grid; place-items: center; touch-action: none; user-select: none
   background: rgba(20, 18, 28, .92); border: 1px solid #d54173; color: #fea198;
   font: 12px/1.45 ui-monospace, Menlo, monospace; white-space: pre-wrap; z-index: 10;
 }
+
+/* ---------------------------------------------------------------- Hall of Fame overlay */
+#stage { container-type: inline-size; }
+#board {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 5;
+  width: 46cqw; max-height: 84%; display: flex; flex-direction: column; gap: 0.9cqw;
+  padding: 1.6cqw 1.8cqw; cursor: default; user-select: text;
+  font-size: 1.15cqw; letter-spacing: 0.15em;
+}
+#board.hidden, #board .hidden { display: none !important; }
+#board header { display: flex; align-items: baseline; justify-content: space-between; }
+#board h2 { margin: 0; font-weight: 400; font-size: 1.7cqw; letter-spacing: 0.2em; }
+#board-meta { font-size: 0.85cqw; opacity: .75; }
+#board ol { list-style: none; margin: 0; padding: 0; overflow-y: auto; min-height: 0; }
+#board li { display: grid; grid-template-columns: 3.2em 1fr 4em 3.6em 7em; align-items: center; padding: 0.42cqw 0.6cqw; }
+#board li.empty { display: block; text-align: center; padding: 2cqw 0; opacity: .7; }
+#board .rd, #board .pf { font-size: 0.8em; opacity: .7; }
+#board .sc { text-align: right; }
+#board form label { display: block; margin-bottom: 0.5cqw; }
+#board .row { display: flex; gap: 0.6cqw; }
+#board input { flex: 1; min-width: 0; font: inherit; font-size: 1.5cqw; letter-spacing: 0.25em; text-transform: uppercase; padding: 0.5cqw 0.8cqw; outline: none; }
+#board button { font: inherit; font-size: 1cqw; letter-spacing: 0.2em; padding: 0.55cqw 1.2cqw; cursor: pointer; }
+#board form.busy { opacity: .5; pointer-events: none; }
+#board-note { margin: 0; font-size: 0.9cqw; min-height: 1em; }
+#board-continue { align-self: center; }
+
+/* HUD view: chamfered mission-control glass */
+#stage[data-view="hud"] #board {
+  font-family: "Rajdhani", system-ui, sans-serif; font-weight: 600; color: #e3e9ee;
+  background: linear-gradient(180deg, rgba(69,163,250,.10), rgba(69,163,250,0) 18%), rgba(5,12,21,.92);
+  clip-path: polygon(1.2cqw 0, calc(100% - 1.2cqw) 0, 100% 1.2cqw, 100% calc(100% - 1.2cqw), calc(100% - 1.2cqw) 100%, 1.2cqw 100%, 0 calc(100% - 1.2cqw), 0 1.2cqw);
+  box-shadow: inset 0 0 0 1px rgba(110,170,230,.35);
+}
+#stage[data-view="hud"] #board h2 { font-family: "Michroma", sans-serif; color: #e3e9ee; }
+#stage[data-view="hud"] #board-meta, #stage[data-view="hud"] #board-note { color: #95a0ab; }
+#stage[data-view="hud"] #board li { border-bottom: 1px solid rgba(255,255,255,.06); }
+#stage[data-view="hud"] #board .rk { color: #95a0ab; }
+#stage[data-view="hud"] #board .sc { font-family: "Michroma", sans-serif; font-size: .9em; }
+#stage[data-view="hud"] #board li.me { background: rgba(251,136,45,.10); box-shadow: inset 2px 0 0 #fb882d; }
+#stage[data-view="hud"] #board li.me .sc, #stage[data-view="hud"] #board label { color: #fb882d; }
+#stage[data-view="hud"] #board input { background: rgba(24,37,51,.9); color: #e3e9ee; border: 1px solid #45a3fa; font-family: "Michroma", sans-serif; }
+#stage[data-view="hud"] #board button { background: transparent; color: #e3e9ee; border: 1px solid #12c7bf; font-family: "Rajdhani", sans-serif; font-weight: 600; }
+#stage[data-view="hud"] #board button:hover { background: rgba(18,199,191,.15); }
+
+/* ARCADE view: synthwave glass */
+#stage[data-view="arcade"] #board {
+  font-family: "InterMB", system-ui, sans-serif; color: #e8e7ee; border-radius: 1.4cqw;
+  background: rgba(20,18,28,.92); box-shadow: 0 0 0 1.5px #4e437a, 0 0 3cqw rgba(138,106,237,.35);
+}
+#stage[data-view="arcade"] #board h2 { font-family: "Audiowide", sans-serif; color: #a088fc; }
+#stage[data-view="arcade"] #board-meta, #stage[data-view="arcade"] #board-note { color: #9e9caa; }
+#stage[data-view="arcade"] #board .sc { font-family: "Audiowide", sans-serif; color: #16bdfa; }
+#stage[data-view="arcade"] #board li:nth-child(odd) { background: rgba(255,255,255,.03); border-radius: .5cqw; }
+#stage[data-view="arcade"] #board li.me { background: rgba(22,189,250,.15); }
+#stage[data-view="arcade"] #board label { color: #16bdfa; }
+#stage[data-view="arcade"] #board input { background: #242132; color: #e8e7ee; border: 1.5px solid #a088fc; border-radius: .6cqw; font-family: "Audiowide", sans-serif; }
+#stage[data-view="arcade"] #board button { background: linear-gradient(#bf91f9, #6266ec); color: #fff; border: 0; border-radius: .6cqw; font-family: "Audiowide", sans-serif; }
+
+/* ---------------------------------------------------------------- desktop download links (title screen, web only) */
+#downloads {
+  position: absolute; left: 2.2cqw; bottom: 1.6cqw; z-index: 4; display: none; gap: 0.8cqw; align-items: center;
+  font: 600 0.95cqw/1 "Rajdhani", system-ui, sans-serif; letter-spacing: 0.25em; color: #95a0ab;
+}
+#stage.on-title:not(.desktop) #downloads { display: flex; }
+#downloads a {
+  color: #e3e9ee; text-decoration: none; padding: 0.5cqw 0.9cqw; border: 1px solid rgba(18,199,191,.6);
+  background: rgba(5,12,21,.7); cursor: pointer;
+}
+#downloads a:hover { background: rgba(18,199,191,.18); }
+#stage[data-view="arcade"] #downloads { font-family: "InterMB", sans-serif; color: #9e9caa; }
+#stage[data-view="arcade"] #downloads a { border-color: #a088fc; border-radius: 0.5cqw; background: rgba(20,18,28,.75); }

@@ -1,0 +1,55 @@
+name: Desktop builds
+
+# Tag a version (git tag v1.0.1 && git push --tags) or run manually to build the native apps with the
+# MSVC toolchain + proper installers. Artifacts are attached to the run; the public downloads are served
+# from megaballneo.com/downloads (see tools/package-desktop.sh + npm run deploy).
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            target: universal-apple-darwin
+            rust_targets: aarch64-apple-darwin,x86_64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            rust_targets: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_targets }}
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - run: npm ci
+      - run: npx tauri build --target ${{ matrix.target }}
+      - name: Collect artifacts with stable names
+        shell: bash
+        run: |
+          mkdir -p dist
+          B=src-tauri/target/${{ matrix.target }}/release/bundle
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            cp "$B"/dmg/*.dmg dist/MegaballNeo-mac.dmg
+          else
+            cp "$B"/nsis/*-setup.exe dist/MegaballNeo-windows-setup.exe
+            cp "$B"/msi/*.msi dist/MegaballNeo-windows.msi
+          fi
+          ls -la dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: megaball-${{ runner.os }}
+          path: dist/*

@@ -6,9 +6,17 @@
   "type": "module",
   "scripts": {
     "build:rive": "node tools/build-rive.mjs",
-    "start": "npx --yes http-server public -p 8080 -c-1"
+    "start": "npx --yes http-server public -p 8080 -c-1",
+    "tauri": "tauri",
+    "desktop:dev": "tauri dev",
+    "desktop:mac": "tauri build --target universal-apple-darwin",
+    "desktop:win": "tauri build --target x86_64-pc-windows-gnu --no-bundle",
+    "package:desktop": "bash tools/package-desktop.sh",
+    "deploy": "node tools/deploy.mjs"
   },
   "devDependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.0"
-  }
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "@tauri-apps/cli": "^2.11.5"
+  },
+  "author": "Loxy"
 }

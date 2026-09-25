@@ -2,3 +2,7 @@ node_modules/
 .DS_Store
 .claude/
 .wrangler/
+src-tauri/target/
+src-tauri/gen/
+dist-site/
+downloads/

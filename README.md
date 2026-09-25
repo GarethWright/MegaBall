@@ -12,17 +12,41 @@ Then open http://localhost:8080. You can also run `npm start`, which uses `http-
 
 **Controls:** move with the mouse, touch, or ← →. Launch the ball and fire lasers with Space or a click. P pauses, M mutes, and V switches views.
 
-Play online: **https://megaball.garethwright.com** (also at https://megaball.puk.me.uk)
+Play online: **https://megaballneo.com** (also at https://megaball.garethwright.com and https://megaball.puk.me.uk)
 
 ## Deploy
 
-The site is a static-assets Cloudflare Worker (`wrangler.jsonc`) that serves `public/` on the custom domains `megaball.garethwright.com` and `megaball.puk.me.uk`. To deploy:
+The site is a static-assets Cloudflare Worker (`wrangler.jsonc`) that serves the site (plus `/api/scores` and `/downloads/`) on `megaballneo.com`, `www.megaballneo.com`, `megaball.garethwright.com` and `megaball.puk.me.uk`. To deploy:
 
 ```bash
-npx wrangler@4.40.0 deploy
+npm run deploy   # assembles dist-site/ (public + downloads) and runs wrangler deploy
 ```
 
 The version is pinned because the latest Wrangler needs Node 22 or later, and 4.40.0 works on Node 20. On Node 22 you can drop the pin.
+
+## Desktop downloads (Mac and Windows)
+
+The desktop apps are native Rust executables built with [Tauri](https://tauri.app). The game from `public/` is embedded in the binary and renders through the system web engine (WKWebView on Mac, WebView2 on Windows). They work offline, apart from the leaderboard, which talks to megaballneo.com.
+
+- **Mac:** a universal `.dmg` (Apple Silicon and Intel) from https://megaballneo.com/downloads/MegaballNeo-mac.dmg
+- **Windows:** a portable zip (`Megaball Neo.exe` plus `WebView2Loader.dll`) from https://megaballneo.com/downloads/MegaballNeo-windows.zip
+
+To build and publish:
+
+```bash
+npm run desktop:mac        # universal .app + .dmg (on a Mac)
+npm run desktop:win        # cross-compiled Windows exe (needs mingw-w64: brew install mingw-w64)
+npm run package:desktop    # copy both into downloads/
+npm run deploy             # website = public/ + downloads/  ->  Cloudflare
+```
+
+The builds are not code-signed. On a Mac, the first launch needs right-click → Open. On Windows, SmartScreen asks for "More info → Run anyway". `.github/workflows/desktop.yml` builds the MSVC Windows installers (`.msi` and NSIS setup) and the Mac `.dmg` in CI whenever a `v*` tag is pushed.
+
+## Hall of Fame
+
+The global top 20 is stored in Cloudflare D1. The Worker (`worker/index.js`) serves `GET /api/scores` and `POST /api/scores`, validates each submission with a plausibility cap per round, and rate-limits it by a hashed IP.
+
+After a game, you're asked for a name if your score makes the board. Press **H** on the title screen to browse it.
 
 ## Views
 
@@ -122,6 +146,8 @@ npm run build:rive              # or: node tools/build-rive.mjs paddle banner
 It writes the `.riv` files to `public/rive/`, the scene specs to `rive-src/*.scene.json`, and preview PNGs to `rive-src/previews/`.
 
 ## Credits
+
+- **Developed by Loxy.**
 
 - Original Megaball © Ed & Al Mackey. This is an unofficial fan tribute.
 - Earth textures: NASA Earth Observatory (Blue Marble, Black Marble and the cloud map), all public domain.

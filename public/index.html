@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Megaball Neo</title>
-  <meta name="description" content="A modern tribute to the Amiga classic Megaball — Rive-animated brick breaker." />
+  <meta name="description" content="A modern tribute to the Amiga classic Megaball — Rive-animated brick breaker. Developed by Loxy." />
+  <meta name="author" content="Loxy" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -14,6 +15,21 @@
     <canvas id="orbit"></canvas>
     <canvas id="game"></canvas>
     <canvas id="fx"></canvas>
+    <section id="board" class="hidden" aria-label="Hall of Fame">
+      <header><h2>HALL OF FAME</h2><span id="board-meta">GLOBAL · TOP 20</span></header>
+      <form id="entry" class="hidden" autocomplete="off">
+        <label id="entry-label" for="entry-name">NEW HIGH SCORE</label>
+        <div class="row"><input id="entry-name" maxlength="12" placeholder="ENTER NAME" spellcheck="false" /><button type="submit">SUBMIT</button></div>
+      </form>
+      <ol id="board-list"></ol>
+      <p id="board-note"></p>
+      <button id="board-continue" type="button" class="hidden">CONTINUE</button>
+    </section>
+    <nav id="downloads" aria-label="Download the desktop app">
+      <span>DOWNLOAD</span>
+      <a href="/downloads/MegaballNeo-mac.dmg">MAC</a>
+      <a href="/downloads/MegaballNeo-windows.zip">WINDOWS</a>
+    </nav>
     <div id="loading">LOADING…</div>
   </main>
   <script type="module" src="game.js"></script>

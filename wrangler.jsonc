@@ -2,12 +2,26 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "megaball",
   "compatibility_date": "2025-09-01",
-  // Static-assets-only Worker: serves the game straight from public/
+  // Worker handles /api/* (leaderboard); everything else is static. dist-site/ = public/ + downloads/,
+  // assembled by `npm run deploy` (tools/deploy.mjs).
+  "main": "worker/index.js",
   "assets": {
-    "directory": "./public",
-    "not_found_handling": "404-page"
+    "directory": "./dist-site",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "megaball-scores",
+      "database_id": "ef7bf001-8bc6-4737-8e40-185312034a85",
+      "migrations_dir": "migrations"
+    }
+  ],
   "routes": [
+    { "pattern": "megaballneo.com", "custom_domain": true },
+    { "pattern": "www.megaballneo.com", "custom_domain": true },
     { "pattern": "megaball.puk.me.uk", "custom_domain": true },
     { "pattern": "megaball.garethwright.com", "custom_domain": true }
   ]
