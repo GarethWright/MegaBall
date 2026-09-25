@@ -8,6 +8,7 @@ const W = 1200, H = 800;
 const FIELD = { left: 276, right: 924, top: 64, bottom: H };
 const COLS = 12, BW = 54, BH = 24, BRICK_TOP = 112;
 const PADDLE_Y = 742, BALL_R = 8;
+const MAX_BALL_SPEED = 680; // px/s hard cap, whatever the round, return count or FAST capsule
 const PADDLE_CX = 160, PADDLE_CY = 52; // paddle artboard pivot
 const SIZE = { shrink: 4, normal: 20, expand: 50 };
 const paddleWidth = (size) => 60 + 2.2 * size + 24; // bar inner + end caps (matches paddle.riv poses)
@@ -188,7 +189,7 @@ const S = {
   bricks: [], balls: [], caps: [], bolts: [], parts: [], popups: [],
   paddle: { x: W / 2, size: SIZE.normal, target: SIZE.normal, vx: 0 },
   fx: { laser: 0, catch: 0, slow: 0, fast: 0, mega: 0 },
-  shake: 0, flash: 0, time: 0, modeT: 0, laserCd: 0, hits: 0, paused: false,
+  shake: 0, flash: 0, time: 0, modeT: 0, laserCd: 0, hits: 0, returns: 0, paused: false,
 };
 const keys = new Set();
 let pointerX = null;
@@ -210,10 +211,11 @@ function loadRound(n) {
 }
 
 function baseSpeed() {
-  let s = 400 + Math.min(S.round, 10) * 18 + Math.min(S.hits * 1.5, 150);
+  // like the original, every return off the paddle speeds the ball up (reset when a ball is lost)
+  let s = 400 + Math.min(S.round, 10) * 18 + S.returns * 10;
   if (S.fx.slow > 0) s *= 0.72;
   if (S.fx.fast > 0) s *= 1.25;
-  return s;
+  return Math.min(s, MAX_BALL_SPEED);
 }
 
 function resetPaddleFx() {
@@ -225,7 +227,7 @@ function resetPaddleFx() {
 
 function serve() {
   S.balls = [{ x: S.paddle.x, y: PADDLE_Y - 12 - BALL_R, vx: 0, vy: 0, stuck: true, offset: 0, trail: [] }];
-  S.hits = 0;
+  S.hits = 0; S.returns = 0;
 }
 
 function startRound(first = false) {
@@ -475,6 +477,7 @@ function stepBall(b, dt, half) {
   const top = PADDLE_Y - 12, pd = S.paddle;
   if (b.vy > 0 && b.y + BALL_R >= top && oy + BALL_R <= top + 8 && Math.abs(b.x - pd.x) <= half + BALL_R) {
     b.y = top - BALL_R;
+    S.returns++;
     const off = clamp((b.x - pd.x) / half, -1, 1), sp = baseSpeed();
     const ang = off * 1.05 + clamp(pd.vx / 4000, -0.15, 0.15);
     b.vx = Math.sin(ang) * sp; b.vy = -Math.abs(Math.cos(ang) * sp);
@@ -722,21 +725,36 @@ function render() {
 resize();
 toTitle();
 let last = performance.now();
+let lastError = null;
 function frame(now) {
-  const dt = Math.min(0.033, (now - last) / 1000);
+  // schedule first so a thrown error can never freeze the game on the backdrop
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.033, Math.max(0, (now - last) / 1000));
   last = now;
-  if (!S.paused) {
-    update(dt);
-    paddleActor.advance(dt);
-    for (const l of legend) l.actor.advance(dt);
-    if (title) title.advance(dt);
+  try {
+    if (!S.paused) {
+      update(dt);
+      paddleActor.advance(dt);
+      for (const l of legend) l.actor.advance(dt);
+      if (title) title.advance(dt);
+    }
+    backdrop.advance(dt);
+    banner.advance(dt);
+    render();
+  } catch (err) {
+    if (String(err) !== lastError) { lastError = String(err); console.error("[megaball] frame error:", err); showError(err); }
   }
-  backdrop.advance(dt);
-  banner.advance(dt);
-  render();
-  rive.requestAnimationFrame(frame);
+  // flush Rive's queued draws (we drive the loop with the standard rAF)
+  rive.resolveAnimationFrame();
 }
-rive.requestAnimationFrame(frame);
+function showError(err) {
+  let el = document.getElementById("error");
+  if (!el) { el = document.createElement("pre"); el.id = "error"; stage.appendChild(el); }
+  el.textContent = `Something went wrong — please report this:\n${err && err.stack ? err.stack.split("\n").slice(0, 4).join("\n") : err}`;
+}
+window.addEventListener("error", (e) => showError(e.error || e.message));
+window.addEventListener("unhandledrejection", (e) => showError(e.reason));
+requestAnimationFrame(frame);
 
 // debugging hook for automated checks
 window.__megaball = { S, LEVELS, newGame, loadRound, startRound, applyCapsule, dropCapsule };

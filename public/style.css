@@ -15,3 +15,9 @@ body { display: grid; place-items: center; touch-action: none; user-select: none
   font: 24px "Audiowide", system-ui, sans-serif; letter-spacing: .2em; color: var(--accent);
 }
 #loading.hidden { display: none; }
+
+#error {
+  position: absolute; left: 16px; right: 16px; bottom: 16px; margin: 0; padding: 12px 14px; border-radius: 10px;
+  background: rgba(20, 18, 28, .92); border: 1px solid #d54173; color: #fea198;
+  font: 12px/1.45 ui-monospace, Menlo, monospace; white-space: pre-wrap; z-index: 10;
+}

@@ -41,6 +41,8 @@ Everything is drawn with the low-level `@rive-app/canvas-advanced` runtime, so t
 
 **E** Expand · **S** Slow · **C** Catch · **L** Laser · **M** Multiball · **B** Mega ball (smashes through bricks) · **P** Extra life. Two are bad: **X** Shrink and **F** Fast.
 
+As in the original, the ball speeds up a little every time it comes back off the paddle. The speed resets when you lose a ball and never goes above 680 px/s.
+
 Bricks come in these kinds: rainbow, silver (takes several hits), gold (indestructible), ✸ explosive (chain reaction), and ? mystery (always drops a capsule). There are 8 rounds, and they loop at a higher speed.
 
 ## Music
