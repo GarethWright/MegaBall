@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "megaball",
+  "compatibility_date": "2025-09-01",
+  // Static-assets-only Worker: serves the game straight from public/
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "megaball.puk.me.uk", "custom_domain": true }
+  ]
+}

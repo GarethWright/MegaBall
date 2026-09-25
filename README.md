@@ -12,6 +12,18 @@ Then open http://localhost:8080. You can also run `npm start`, which uses `http-
 
 **Controls:** move with the mouse, touch, or ← →. Launch the ball and fire lasers with Space or a click. P pauses and M mutes.
 
+Play online: **https://megaball.puk.me.uk**
+
+## Deploy
+
+The site is a static-assets Cloudflare Worker (`wrangler.jsonc`) that serves `public/` on the custom domain `megaball.puk.me.uk`. To deploy:
+
+```bash
+npx wrangler@4.40.0 deploy
+```
+
+The version is pinned because the latest Wrangler needs Node 22 or later, and 4.40.0 works on Node 20. On Node 22 you can drop the pin.
+
 ## What's Rive and what's canvas
 
 | Layer | Tech | Details |
