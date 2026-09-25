@@ -315,7 +315,40 @@ function titleScene() {
 }
 
 // ---------------------------------------------------------------- 3. paddle
-function paddleScene() {
+// HUD bat: gunmetal hull, angular end pods with status LEDs, cyan energy core, orange emitters.
+// Same ids as the arcade bat so the size/hit/laser/magnet animations drive both.
+function hudPaddleParts(BASE, CAP) {
+  const pod = [{ x: -13, y: -5 }, { x: -8, y: -11 }, { x: 8, y: -11 }, { x: 13, y: -5 }, { x: 13, y: 5 }, { x: 8, y: 11 }, { x: -8, y: 11 }, { x: -13, y: 5 }];
+  const cap = (side) => [
+    { id: `gun${side}b`, parent: `gun${side}`, type: "polygon", x: 0, y: -8, z: 5, points: [{ x: -3, y: 8 }, { x: -3, y: -5 }, { x: 0, y: -9 }, { x: 3, y: -5 }, { x: 3, y: 8 }],
+      fill: vGrad(18, [{ color: HP.text }, { color: HP.primaryStrong }]) },
+    { id: `gun${side}t`, parent: `gun${side}`, type: "ellipse", x: 0, y: -17, width: 10, height: 10, z: 6,
+      fill: { gradient: { type: "radial", start: { x: 0, y: 0 }, end: { x: 5, y: 0 }, stops: [{ color: "#ffffff" }, { color: alpha(HP.accent, 0) }] } } },
+    { id: `cap${side}f`, parent: `cap${side}`, type: "polygon", x: 0, y: 0, z: 20, points: pod,
+      fill: vGrad(22, [{ color: "#3a4f66", position: 0 }, { color: "#1a2635", position: 0.55 }, { color: "#0c141d", position: 1 }]) },
+    { id: `cap${side}h`, parent: `cap${side}`, type: "rect", x: 0, y: 1, width: 8, height: 3, z: 21, fill: { color: HUD_ORANGE } },
+    { id: `cap${side}r`, parent: `cap${side}`, type: "polygon", x: 0, y: 0, z: 22, points: pod, stroke: { color: HP.primary, thickness: 1.2, join: "miter" } },
+    { id: `cap${side}e`, parent: `cap${side}`, type: "rect", x: 0, y: -9.5, width: 14, height: 1.5, z: 23, fill: { color: HP.text }, opacity: 0.7 },
+  ];
+  const shapes = [
+    { id: "glow", parent: "paddle", type: "ellipse", x: 0, y: 4, width: 300, height: 40, z: 1, opacity: 0.55,
+      fill: { gradient: { type: "radial", start: { x: 0, y: 0 }, end: { x: 150, y: 0 }, stops: [{ color: alpha(HP.primaryStrong, 0.6), position: 0 }, { color: alpha(HP.primaryStrong, 0), position: 1 }] } } },
+    { id: "magnet", parent: "paddle", type: "rect", x: 0, y: -14, width: 300, height: 2, z: 2, opacity: 0, fill: { color: HP.accent } },
+    ...cap("L"), ...cap("R"),
+    { id: "barF", parent: "bar", type: "rect", x: 0, y: 0, width: BASE, height: 14, z: 10,
+      fill: vGrad(14, [{ color: "#34485e", position: 0 }, { color: "#16212e", position: 0.5 }, { color: "#0a1119", position: 1 }]) },
+    { id: "barH", parent: "bar", type: "rect", x: 0, y: -6.25, width: BASE, height: 1.5, z: 11, fill: { color: HP.primary } },
+    { id: "barCore", parent: "bar", type: "rect", x: 0, y: 1, width: BASE - 6, height: 3, z: 11, fill: hGrad(BASE - 6, [{ color: alpha(HP.accent, 0.2) }, { color: HP.accent, position: 0.5 }, { color: alpha(HP.accent, 0.2) }]) },
+    { id: "energy", parent: "bar", type: "polygon", x: 0, y: 1, closed: false, z: 12,
+      points: [{ x: -BASE / 2 + 3, y: 0 }, { x: BASE / 2 - 3, y: 0 }],
+      stroke: { color: "#ffffff", thickness: 2, cap: "butt", trim: { start: 0, end: 0.18, offset: 0 } } },
+    { id: "flash", parent: "paddle", type: "rect", x: 0, y: 0, width: 300, height: 22, z: 30, opacity: 0,
+      fill: { gradient: { type: "radial", start: { x: 0, y: 0 }, end: { x: 150, y: 0 }, stops: [{ color: "#ffffff" }, { color: alpha(HP.accent, 0) }] } } },
+  ];
+  return { cap, shapes };
+}
+
+function paddleScene(style = "arcade") {
   const PW = 320, PH = 96, CY = 52, BASE = 100, CAP = 24;
   const groups = [
     { id: "paddle", x: PW / 2, y: CY },
@@ -325,7 +358,7 @@ function paddleScene() {
     { id: "gunL", parent: "capL", x: 0, y: -4 },
     { id: "gunR", parent: "capR", x: 0, y: -4 },
   ];
-  const cap = (side) => [
+  let cap = (side) => [
     { id: `gun${side}b`, parent: `gun${side}`, type: "rect", x: 0, y: -8, width: 7, height: 16, cornerRadius: 2, z: 5,
       fill: vGrad(16, [{ color: WARM.gradients.primary[0] }, { color: WARM.gradients.primary[1] }]) },
     { id: `gun${side}t`, parent: `gun${side}`, type: "ellipse", x: 0, y: -16, width: 9, height: 9, z: 6, blendMode: "screen",
@@ -336,7 +369,7 @@ function paddleScene() {
     { id: `cap${side}r`, parent: `cap${side}`, type: "rect", x: 0, y: 0, width: CAP, height: 24, cornerRadius: 9, z: 22,
       stroke: { color: alpha(P.text, 0.35), thickness: 1.5 } },
   ];
-  const shapes = [
+  let shapes = [
     { id: "glow", parent: "paddle", type: "ellipse", x: 0, y: 2, width: 300, height: 56, z: 1, blendMode: "screen", opacity: 0.6,
       fill: { gradient: { type: "radial", start: { x: 0, y: 0 }, end: { x: 150, y: 0 }, stops: [{ color: alpha(P.primaryStrong, 0.75), position: 0 }, { color: alpha(P.primaryStrong, 0), position: 1 }] } } },
     { id: "magnet", parent: "paddle", type: "rect", x: 0, y: -10, width: 300, height: 10, cornerRadius: 5, z: 2, blendMode: "screen", opacity: 0,
@@ -351,6 +384,7 @@ function paddleScene() {
     { id: "flash", parent: "paddle", type: "rect", x: 0, y: 0, width: 300, height: 26, cornerRadius: 12, z: 30, blendMode: "screen", opacity: 0,
       fill: { gradient: { type: "radial", start: { x: 0, y: 0 }, end: { x: 150, y: 0 }, stops: [{ color: P.text }, { color: alpha(P.accent, 0) }] } } },
   ];
+  if (style === "hud") ({ cap, shapes } = hudPaddleParts(BASE, CAP));
   // size poses for the blend state (inner bar width 60..280)
   const pose = (inner) => [
     { target: "bar", property: "scaleX", keyframes: [{ frame: 0, value: inner / BASE }] },
@@ -627,11 +661,13 @@ const bracket = (id, parent, x, y, sx, sy, arm, color, z, thickness = 2) => ({ i
 
 function titleHudArtboard() {
   const groups = [{ id: "mark", x: W / 2, y: 150 }], shapes = [], texts = [];
-  // logo mark: a chevron apex with a ball in orbit around it
+  // logo mark: an angular M with a ball in orbit around it
   shapes.push(
-    { id: "chev", parent: "mark", type: "polygon", x: 0, y: 0, closed: false, z: 10, points: [{ x: -40, y: 32 }, { x: 0, y: -40 }, { x: 40, y: 32 }],
+    { id: "chev", parent: "mark", type: "polygon", x: 0, y: 0, closed: false, z: 10,
+      points: [{ x: -44, y: 32 }, { x: -26, y: -36 }, { x: 0, y: 6 }, { x: 26, y: -36 }, { x: 44, y: 32 }],
       stroke: { color: HP.text, thickness: 3, join: "miter", cap: "butt" } },
-    { id: "chevIn", parent: "mark", type: "polygon", x: 0, y: 0, closed: false, z: 10, points: [{ x: -16, y: 32 }, { x: 0, y: 4 }, { x: 16, y: 32 }],
+    { id: "chevIn", parent: "mark", type: "polygon", x: 0, y: 0, closed: false, z: 10,
+      points: [{ x: -26, y: 32 }, { x: -16, y: -4 }, { x: 0, y: 22 }, { x: 16, y: -4 }, { x: 26, y: 32 }],
       stroke: { color: HP.primary, thickness: 2, join: "miter" } },
     { id: "orbit", parent: "mark", type: "ellipse", x: 0, y: 6, width: 132, height: 36, rotation: -16, z: 9, opacity: 0.55, stroke: { color: HP.primary, thickness: 1.2 } },
     { id: "orbBall", parent: "mark", type: "ellipse", x: 66, y: 6, width: 9, height: 9, z: 11,
@@ -793,7 +829,10 @@ function bannerHudArtboard() {
 
 function hudScene() {
   return {
-    artboards: [...orbitArtboard(), titleHudArtboard(), bannerHudArtboard()],
+    artboards: [...orbitArtboard(), titleHudArtboard(), bannerHudArtboard(), (() => {
+      const { artboard, ...rest } = paddleScene("hud");
+      return { ...rest, name: "PaddleHUD", width: artboard.width, height: artboard.height };
+    })()],
     fonts: [
       { id: "hudDisplay", path: FONT_HUD_DISPLAY, subset: UPPER },
       { id: "hudUi", path: FONT_HUD_UI, subset: ANY_TEXT },

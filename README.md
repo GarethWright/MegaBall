@@ -33,6 +33,10 @@ The game plays exactly the same in both views. Switch between them with **V** or
   - **Event Ledger:** a live log of capsules, detonations, lost balls, speed increases and cleared rounds
   - **Ball Vector:** the ball's speed and position
   - **Sector Timeline:** bricks broken per second, plus the current round
+  The HUD view also restyles the pieces in play:
+  - **Ball:** a plasma core with a rotating targeting reticle. It shifts from cyan to orange as it nears the speed cap.
+  - **Lasers:** cyan particle beams with a muzzle flare, plus a ping where they hit.
+  - **Blocks:** glass instrument tiles with a bevel and a notched corner, a light sweep that crosses the wall, pulsing hazards and a scanning mystery block. They shatter into glass shards.
 - **ARCADE** is the original synthwave look.
 
 The Earth is a WebGL2 shader in `public/planet.js`. It uses NASA textures (Blue Marble for the surface, Black Marble for city lights, plus a cloud layer) and adds a sunlit terminator, ocean glint and an atmospheric limb. It turns once every 4 minutes.
@@ -46,7 +50,7 @@ The Earth is a WebGL2 shader in `public/planet.js`. It uses NASA textures (Blue 
 | `paddle.riv` | Rive | `PaddleSM` has 4 layers: **Size** (a 1D blend on a `size` number, used for expand and shrink), **FX** (`hit` trigger that squashes and flashes the paddle), **Laser** (a `laser` bool that raises the cannons) and **Magnet** (a `magnet` bool for catch mode) |
 | `capsules.riv` | Rive | 9 artboards, one per power-up, each with a shine sweep and a rolling label band |
 | `banner.riv` | Rive | `BannerSM` with `flash`, `enter` and `exit` triggers. The `headline` and `sub` text runs are rewritten at runtime |
-| `hud.riv` | Rive | The HUD view's star field (`OrbitBack`), launch paths, orbit rings and launch-site ping (`OrbitFront`), the title (`TitleHUD`) and the banner (`BannerHUD`) |
+| `hud.riv` | Rive | The HUD view's star field (`OrbitBack`), launch paths, orbit rings and launch-site ping (`OrbitFront`), the title (`TitleHUD`) with its M logo, the banner (`BannerHUD`), and the HUD bat (`PaddleHUD`), which has a gunmetal hull, angular pods, a cyan energy core and orange emitters, and uses the same state machine as the arcade bat |
 | bricks, ball, particles, HUD | Canvas2D | Physics, collisions and levels live in `public/game.js` |
 
 Everything is drawn with the low-level `@rive-app/canvas-advanced` runtime, with many artboard instances spread across three canvases.

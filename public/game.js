@@ -70,7 +70,15 @@ class RiveActor {
 const backdrop = new RiveActor(fBackdrop, "Backdrop", "BackdropSM");
 const orbitBack = new RiveActor(fHud, "OrbitBack", "OrbitSM");
 const orbitFront = new RiveActor(fHud, "OrbitFront", "OrbitSM");
-const paddleActor = new RiveActor(fPaddle, "Paddle", "PaddleSM");
+// one bat per view; inputs go to both so switching views mid-game keeps state
+const paddles = { arcade: new RiveActor(fPaddle, "Paddle", "PaddleSM"), hud: new RiveActor(fHud, "PaddleHUD", "PaddleSM") };
+const paddleActor = {
+  num: (n, v) => { paddles.arcade.num(n, v); paddles.hud.num(n, v); },
+  bool: (n, v) => { paddles.arcade.bool(n, v); paddles.hud.bool(n, v); },
+  fire: (n) => { paddles.arcade.fire(n); paddles.hud.fire(n); },
+  advance: (dt) => { paddles.arcade.advance(dt); paddles.hud.advance(dt); },
+  draw: (r, x, y) => paddles[view].draw(r, x, y),
+};
 // both banners are kept in sync so the view can switch mid-message
 const banners = { arcade: new RiveActor(fBanner, "Banner", "BannerSM"), hud: new RiveActor(fHud, "BannerHUD", "BannerSM") };
 const banner = {
@@ -232,6 +240,9 @@ function paintHudBrick(g, edge, fillA, fillB, top) {
   g.fillStyle = top; g.fillRect(2, 2, w, 2);
   g.fillStyle = edge; g.fillRect(2, 4, 3, h - 2);
   g.strokeStyle = edge; g.lineWidth = 1; g.strokeRect(2.5, 2.5, w - 1, h - 1);
+  // inner bevel + a cut corner notch, like an instrument panel tile
+  g.strokeStyle = "rgba(255,255,255,0.10)"; g.strokeRect(5.5, 5.5, w - 7, h - 7);
+  g.fillStyle = edge; g.beginPath(); g.moveTo(w + 2, h - 5); g.lineTo(w + 2, h + 2); g.lineTo(w - 5, h + 2); g.closePath(); g.fill();
 }
 function hudSpriteFor(b) {
   const glyph = (g, ch, color, font) => { g.fillStyle = color; g.font = font; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(ch, BW / 2 - 2, BH / 2); };
@@ -370,7 +381,7 @@ function fireLaser() {
   if (S.laserCd > 0) return;
   S.laserCd = 0.22;
   const half = (60 + 2.2 * S.paddle.size) / 2;
-  S.bolts.push({ x: S.paddle.x - half, y: PADDLE_Y - 26 }, { x: S.paddle.x + half, y: PADDLE_Y - 26 });
+  S.bolts.push({ x: S.paddle.x - half, y: PADDLE_Y - 26, age: 0 }, { x: S.paddle.x + half, y: PADDLE_Y - 26, age: 0 });
   Sound.laser();
 }
 function setView(v) {
@@ -422,6 +433,7 @@ function burst(x, y, color, n = 14, speed = 260) {
     S.parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 80, life: rand(0.4, 0.9), max: 0.9, size: rand(2, 5), color, rot: rand(0, 6), vr: rand(-10, 10) });
   }
 }
+function ping(x, y, color, r = 30, life = 0.35, w = 2) { S.parts.push({ ring: true, x, y, color, r, w, life, max: life }); }
 function popup(x, y, text, color = P.text) { S.popups.push({ x, y, text, color, t: 0 }); }
 function addScore(n) {
   S.score += n;
@@ -444,6 +456,7 @@ function damage(b, byMega = false) {
   addScore(b.pts);
   const cx = b.x + BW / 2, cy = b.y + BH / 2;
   burst(cx, cy, brickColor(b), b.type === "x" ? 26 : 14);
+  if (view === "hud") ping(cx, cy, brickColor(b), 34, 0.4, 1.5);
   if (b.type === "s") Sound.metal(); else Sound.brick(b.r);
   if (b.type === "?" || (b.type !== "x" && Math.random() < 0.11)) dropCapsule(cx, cy, b.type === "?");
   if (b.type === "x") explode(b);
@@ -453,7 +466,7 @@ function explode(b) {
   S.shake = Math.max(S.shake, 10); S.flash = 0.35;
   Sound.boom();
   logEvent("DETONATION", "HAZARD", "warn");
-  S.parts.push({ ring: true, x: b.x + BW / 2, y: b.y + BH / 2, life: 0.45, max: 0.45 });
+  S.parts.push({ ring: true, x: b.x + BW / 2, y: b.y + BH / 2, life: 0.45, max: 0.45, color: view === "hud" ? HUD.red : WARM.primary[0], r: 110, w: 6 });
   setTimeout(() => {
     for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
       const n = S.grid.get(`${b.r + dr},${b.c + dc}`);
@@ -553,11 +566,14 @@ function update(dt) {
 
   // lasers
   for (const l of S.bolts) {
-    l.y -= 950 * dt;
+    l.y -= 950 * dt; l.age += dt;
     if (l.y < FIELD.top) l.dead = true;
     const c = Math.floor((l.x - FIELD.left) / BW), r = Math.floor((l.y - BRICK_TOP) / BH);
     const br = S.grid.get(`${r},${c}`);
-    if (br && br.alive) { damage(br); burst(l.x, l.y, WARM.primary[0], 4, 120); l.dead = true; }
+    if (br && br.alive) {
+      damage(br); l.dead = true;
+      if (view === "hud") ping(l.x, br.y + BH, HP.accent, 18); else burst(l.x, l.y, WARM.primary[0], 4, 120);
+    }
   }
   S.bolts = S.bolts.filter((l) => !l.dead);
 
@@ -677,12 +693,37 @@ function drawField() {
   for (let y = top; y < H; y += 4) ctx.fillRect(left, y, right - left, 1);
 }
 
+function drawHudBrickFx(b, t) {
+  const x = b.x + 2, y = b.y + 2, w = BW - 4, h = BH - 4;
+  // a diagonal light sweep crosses the whole wall every few seconds
+  const sweep = ((t * 260) % 1400) - 200 + FIELD.left, d = b.x + b.y * 0.6 - sweep;
+  if (d > -60 && d < 20) {
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    ctx.globalAlpha = 0.22 * (1 - Math.abs(d + 20) / 40); ctx.fillStyle = "#ffffff";
+    const sx = sweep - b.y * 0.6;
+    ctx.beginPath(); ctx.moveTo(sx, y); ctx.lineTo(sx + 14, y); ctx.lineTo(sx + 2, y + h); ctx.lineTo(sx - 12, y + h); ctx.fill();
+    ctx.restore();
+  }
+  if (b.type === "x") {
+    ctx.save(); ctx.globalAlpha = 0.25 + 0.25 * Math.sin(t * 7 + b.c); ctx.fillStyle = HUD.red; ctx.fillRect(x, y, w, h);
+    ctx.globalAlpha = 0.9; ctx.strokeStyle = HUD.red; ctx.lineWidth = 1; ctx.strokeRect(x - 2.5, y - 2.5, w + 5, h + 5); ctx.restore();
+  } else if (b.type === "?") {
+    const sy = y + ((t * 30 + b.c * 7) % h);
+    ctx.save(); ctx.globalAlpha = 0.7; ctx.fillStyle = HP.accent; ctx.fillRect(x + 4, sy, w - 8, 1); ctx.restore();
+  }
+  if (b.hit > 0) {
+    ctx.save(); ctx.globalAlpha = b.hit; ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1.5; ctx.shadowColor = HP.accent; ctx.shadowBlur = 10;
+    const g = (1 - b.hit) * 5; ctx.strokeRect(x - g, y - g, w + g * 2, h + g * 2);
+    ctx.globalAlpha = b.hit * 0.35; ctx.fillStyle = "#ffffff"; ctx.fillRect(x, y, w, h); ctx.restore();
+  }
+}
 function drawBricks() {
   const t = S.time;
   for (const b of S.bricks) {
     if (!b.alive) continue;
     const spr = spriteFor(b);
     ctx.drawImage(spr, b.x - 4, b.y - 4, BW + 8, BH + 8);
+    if (view === "hud") { drawHudBrickFx(b, t); continue; }
     if (b.type === "x") {
       ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = 0.25 + 0.2 * Math.sin(t * 6 + b.c);
       ctx.fillStyle = WARM.accent[1]; rrect(ctx, b.x + 2, b.y + 2, BW - 4, BH - 4, 5); ctx.fill(); ctx.restore();
@@ -730,18 +771,36 @@ function drawParticles() {
     const k = p.life / p.max;
     if (p.ring) {
       ctx.globalCompositeOperation = "lighter";
-      ctx.globalAlpha = k; ctx.strokeStyle = WARM.primary[0]; ctx.lineWidth = 6 * k;
-      ctx.beginPath(); ctx.arc(p.x, p.y, (1 - k) * 110 + 10, 0, Math.PI * 2); ctx.stroke();
+      ctx.globalAlpha = k; ctx.strokeStyle = p.color; ctx.lineWidth = p.w * k;
+      ctx.beginPath(); ctx.arc(p.x, p.y, (1 - k) * p.r + 6, 0, Math.PI * 2); ctx.stroke();
       continue;
     }
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = Math.min(1, k * 1.5); ctx.fillStyle = p.color;
-    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6); ctx.restore();
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+    if (view === "hud") ctx.fillRect(-p.size, -0.6, p.size * 2, 1.2); // glass shards
+    else ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+    ctx.restore();
   }
   ctx.restore();
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
   for (const l of S.bolts) {
+    if (view === "hud") {
+      // cyan particle beam: soft sheath, hot core, tapered tail, muzzle flare for the first frames
+      const g = ctx.createLinearGradient(0, l.y, 0, l.y + 44);
+      g.addColorStop(0, "rgba(255,255,255,0.95)"); g.addColorStop(0.25, HP.accent); g.addColorStop(1, "rgba(18,199,191,0)");
+      ctx.globalAlpha = 0.35; ctx.fillStyle = g; ctx.fillRect(l.x - 4, l.y - 2, 8, 46);
+      ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.fillRect(l.x - 1, l.y, 2, 44);
+      ctx.fillStyle = "#fff"; ctx.fillRect(l.x - 1.5, l.y - 3, 3, 5);
+      if (l.age < 0.08) {
+        const k = 1 - l.age / 0.08, my = PADDLE_Y - 30;
+        const m = ctx.createRadialGradient(l.x, my, 0, l.x, my, 16);
+        m.addColorStop(0, `rgba(255,255,255,${k})`); m.addColorStop(1, "rgba(18,199,191,0)");
+        ctx.fillStyle = m; ctx.beginPath(); ctx.arc(l.x, my, 16, 0, 7); ctx.fill();
+      }
+      continue;
+    }
     const g = ctx.createLinearGradient(0, l.y, 0, l.y + 26);
     g.addColorStop(0, "#fff"); g.addColorStop(0.3, WARM.primary[0]); g.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = g; ctx.fillRect(l.x - 2, l.y, 4, 26);
@@ -864,9 +923,10 @@ function drawHudHeader() {
   // logo mark + wordmark
   ctx.save();
   ctx.strokeStyle = HP.text; ctx.lineWidth = 2.2; ctx.lineJoin = "miter";
-  ctx.beginPath(); ctx.moveTo(38, 50); ctx.lineTo(56, 18); ctx.lineTo(74, 50); ctx.stroke();
+  // angular M mark
+  ctx.beginPath(); ctx.moveTo(36, 50); ctx.lineTo(45, 19); ctx.lineTo(56, 38); ctx.lineTo(67, 19); ctx.lineTo(76, 50); ctx.stroke();
   ctx.strokeStyle = HP.primary; ctx.lineWidth = 1.6;
-  ctx.beginPath(); ctx.moveTo(49, 50); ctx.lineTo(56, 37); ctx.lineTo(63, 50); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(44, 50); ctx.lineTo(48, 35); ctx.lineTo(56, 47); ctx.lineTo(64, 35); ctx.lineTo(68, 50); ctx.stroke();
   ctx.restore();
   txt("MEGABALL", 88, 38, FD(16), HP.text, "left", 7);
   txt("BRICK ARCHIVE", 90, 54, FU(9), HP.textMuted, "left", 6);
@@ -1031,26 +1091,39 @@ function drawHudField() {
 }
 
 function drawHudBalls() {
-  const mega = S.fx.mega > 0, col = mega ? HUD.orange : HP.accent;
-  ctx.save();
-  ctx.globalCompositeOperation = "lighter";
-  ctx.lineCap = "round";
+  const mega = S.fx.mega > 0;
+  const mix = (a, b, t) => `rgb(${[0, 2, 4].map((i) => Math.round(parseInt(a.substr(1 + i, 2), 16) * (1 - t) + parseInt(b.substr(1 + i, 2), 16) * t)).join(",")})`;
   for (const b of S.balls) {
+    // colour runs cyan -> orange as the ball approaches the speed cap
+    const sp = b.stuck ? 0 : Math.hypot(b.vx, b.vy), heat = mega ? 1 : clamp((sp - 400) / (MAX_BALL_SPEED - 400), 0, 1);
+    const col = mix(HP.accent, HUD.orange, heat);
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter"; ctx.lineCap = "round";
     const tr = b.trail;
     for (let i = 1; i < tr.length; i++) {
       const k = i / tr.length;
-      ctx.strokeStyle = col; ctx.globalAlpha = k * 0.6; ctx.lineWidth = BALL_R * 1.3 * k;
+      ctx.strokeStyle = col; ctx.globalAlpha = k * (0.35 + heat * 0.35); ctx.lineWidth = BALL_R * (1.1 + heat * 0.6) * k;
       ctx.beginPath(); ctx.moveTo(tr[i - 1].x, tr[i - 1].y); ctx.lineTo(tr[i].x, tr[i].y); ctx.stroke();
     }
-    ctx.globalAlpha = 0.55;
-    const glow = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, BALL_R * 3.5);
+    ctx.globalAlpha = 0.5;
+    const glow = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, BALL_R * 4);
     glow.addColorStop(0, col); glow.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R * 3.5, 0, 7); ctx.fill();
-  }
-  ctx.restore();
-  for (const b of S.balls) {
-    ctx.fillStyle = "#f4fbff"; ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R - 1.5, 0, 7); ctx.fill();
-    ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R, 0, 7); ctx.stroke();
+    ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R * 4, 0, 7); ctx.fill();
+    ctx.restore();
+    // plasma core
+    const core = ctx.createRadialGradient(b.x - 2, b.y - 2, 0.5, b.x, b.y, BALL_R);
+    core.addColorStop(0, "#ffffff"); core.addColorStop(0.55, "#e9fbff"); core.addColorStop(1, col);
+    ctx.fillStyle = core; ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R - 1, 0, 7); ctx.fill();
+    // rotating targeting reticle: three arc segments + tick marks
+    const a0 = S.time * (2 + heat * 4);
+    ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.9;
+    for (let i = 0; i < 3; i++) { const a = a0 + (i * Math.PI * 2) / 3; ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R + 4, a, a + 1.1); ctx.stroke(); }
+    ctx.globalAlpha = 0.6;
+    for (let i = 0; i < 4; i++) {
+      const a = -a0 * 0.5 + (i * Math.PI) / 2, c = Math.cos(a), s2 = Math.sin(a);
+      ctx.beginPath(); ctx.moveTo(b.x + c * (BALL_R + 7), b.y + s2 * (BALL_R + 7)); ctx.lineTo(b.x + c * (BALL_R + 10), b.y + s2 * (BALL_R + 10)); ctx.stroke();
+    }
+    ctx.restore();
   }
 }
 

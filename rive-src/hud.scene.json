@@ -5280,15 +5280,23 @@
      "z": 10,
      "points": [
       {
-       "x": -40,
+       "x": -44,
        "y": 32
       },
       {
-       "x": 0,
-       "y": -40
+       "x": -26,
+       "y": -36
       },
       {
-       "x": 40,
+       "x": 0,
+       "y": 6
+      },
+      {
+       "x": 26,
+       "y": -36
+      },
+      {
+       "x": 44,
        "y": 32
       }
      ],
@@ -5309,15 +5317,23 @@
      "z": 10,
      "points": [
       {
-       "x": -16,
+       "x": -26,
        "y": 32
       },
       {
+       "x": -16,
+       "y": -4
+      },
+      {
        "x": 0,
-       "y": 4
+       "y": 22
       },
       {
        "x": 16,
+       "y": -4
+      },
+      {
+       "x": 26,
        "y": 32
       }
      ],
@@ -7197,6 +7213,1349 @@
      }
     ]
    }
+  },
+  {
+   "groups": [
+    {
+     "id": "paddle",
+     "x": 160,
+     "y": 52
+    },
+    {
+     "id": "bar",
+     "parent": "paddle",
+     "x": 0,
+     "y": 0
+    },
+    {
+     "id": "capL",
+     "parent": "paddle",
+     "x": -50,
+     "y": 0
+    },
+    {
+     "id": "capR",
+     "parent": "paddle",
+     "x": 50,
+     "y": 0
+    },
+    {
+     "id": "gunL",
+     "parent": "capL",
+     "x": 0,
+     "y": -4
+    },
+    {
+     "id": "gunR",
+     "parent": "capR",
+     "x": 0,
+     "y": -4
+    }
+   ],
+   "shapes": [
+    {
+     "id": "glow",
+     "parent": "paddle",
+     "type": "ellipse",
+     "x": 0,
+     "y": 4,
+     "width": 300,
+     "height": 40,
+     "z": 1,
+     "opacity": 0.55,
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 150,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#991b8ae3",
+         "position": 0
+        },
+        {
+         "color": "#001b8ae3",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "magnet",
+     "parent": "paddle",
+     "type": "rect",
+     "x": 0,
+     "y": -14,
+     "width": 300,
+     "height": 2,
+     "z": 2,
+     "opacity": 0,
+     "fill": {
+      "color": "#12c7bf"
+     }
+    },
+    {
+     "id": "gunLb",
+     "parent": "gunL",
+     "type": "polygon",
+     "x": 0,
+     "y": -8,
+     "z": 5,
+     "points": [
+      {
+       "x": -3,
+       "y": 8
+      },
+      {
+       "x": -3,
+       "y": -5
+      },
+      {
+       "x": 0,
+       "y": -9
+      },
+      {
+       "x": 3,
+       "y": -5
+      },
+      {
+       "x": 3,
+       "y": 8
+      }
+     ],
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -9
+       },
+       "end": {
+        "x": 0,
+        "y": 9
+       },
+       "stops": [
+        {
+         "color": "#e3e9ee"
+        },
+        {
+         "color": "#1b8ae3"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "gunLt",
+     "parent": "gunL",
+     "type": "ellipse",
+     "x": 0,
+     "y": -17,
+     "width": 10,
+     "height": 10,
+     "z": 6,
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 5,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#ffffff"
+        },
+        {
+         "color": "#0012c7bf"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "capLf",
+     "parent": "capL",
+     "type": "polygon",
+     "x": 0,
+     "y": 0,
+     "z": 20,
+     "points": [
+      {
+       "x": -13,
+       "y": -5
+      },
+      {
+       "x": -8,
+       "y": -11
+      },
+      {
+       "x": 8,
+       "y": -11
+      },
+      {
+       "x": 13,
+       "y": -5
+      },
+      {
+       "x": 13,
+       "y": 5
+      },
+      {
+       "x": 8,
+       "y": 11
+      },
+      {
+       "x": -8,
+       "y": 11
+      },
+      {
+       "x": -13,
+       "y": 5
+      }
+     ],
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -11
+       },
+       "end": {
+        "x": 0,
+        "y": 11
+       },
+       "stops": [
+        {
+         "color": "#3a4f66",
+         "position": 0
+        },
+        {
+         "color": "#1a2635",
+         "position": 0.55
+        },
+        {
+         "color": "#0c141d",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "capLh",
+     "parent": "capL",
+     "type": "rect",
+     "x": 0,
+     "y": 1,
+     "width": 8,
+     "height": 3,
+     "z": 21,
+     "fill": {
+      "color": "#fb882d"
+     }
+    },
+    {
+     "id": "capLr",
+     "parent": "capL",
+     "type": "polygon",
+     "x": 0,
+     "y": 0,
+     "z": 22,
+     "points": [
+      {
+       "x": -13,
+       "y": -5
+      },
+      {
+       "x": -8,
+       "y": -11
+      },
+      {
+       "x": 8,
+       "y": -11
+      },
+      {
+       "x": 13,
+       "y": -5
+      },
+      {
+       "x": 13,
+       "y": 5
+      },
+      {
+       "x": 8,
+       "y": 11
+      },
+      {
+       "x": -8,
+       "y": 11
+      },
+      {
+       "x": -13,
+       "y": 5
+      }
+     ],
+     "stroke": {
+      "color": "#45a3fa",
+      "thickness": 1.2,
+      "join": "miter"
+     }
+    },
+    {
+     "id": "capLe",
+     "parent": "capL",
+     "type": "rect",
+     "x": 0,
+     "y": -9.5,
+     "width": 14,
+     "height": 1.5,
+     "z": 23,
+     "fill": {
+      "color": "#e3e9ee"
+     },
+     "opacity": 0.7
+    },
+    {
+     "id": "gunRb",
+     "parent": "gunR",
+     "type": "polygon",
+     "x": 0,
+     "y": -8,
+     "z": 5,
+     "points": [
+      {
+       "x": -3,
+       "y": 8
+      },
+      {
+       "x": -3,
+       "y": -5
+      },
+      {
+       "x": 0,
+       "y": -9
+      },
+      {
+       "x": 3,
+       "y": -5
+      },
+      {
+       "x": 3,
+       "y": 8
+      }
+     ],
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -9
+       },
+       "end": {
+        "x": 0,
+        "y": 9
+       },
+       "stops": [
+        {
+         "color": "#e3e9ee"
+        },
+        {
+         "color": "#1b8ae3"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "gunRt",
+     "parent": "gunR",
+     "type": "ellipse",
+     "x": 0,
+     "y": -17,
+     "width": 10,
+     "height": 10,
+     "z": 6,
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 5,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#ffffff"
+        },
+        {
+         "color": "#0012c7bf"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "capRf",
+     "parent": "capR",
+     "type": "polygon",
+     "x": 0,
+     "y": 0,
+     "z": 20,
+     "points": [
+      {
+       "x": -13,
+       "y": -5
+      },
+      {
+       "x": -8,
+       "y": -11
+      },
+      {
+       "x": 8,
+       "y": -11
+      },
+      {
+       "x": 13,
+       "y": -5
+      },
+      {
+       "x": 13,
+       "y": 5
+      },
+      {
+       "x": 8,
+       "y": 11
+      },
+      {
+       "x": -8,
+       "y": 11
+      },
+      {
+       "x": -13,
+       "y": 5
+      }
+     ],
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -11
+       },
+       "end": {
+        "x": 0,
+        "y": 11
+       },
+       "stops": [
+        {
+         "color": "#3a4f66",
+         "position": 0
+        },
+        {
+         "color": "#1a2635",
+         "position": 0.55
+        },
+        {
+         "color": "#0c141d",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "capRh",
+     "parent": "capR",
+     "type": "rect",
+     "x": 0,
+     "y": 1,
+     "width": 8,
+     "height": 3,
+     "z": 21,
+     "fill": {
+      "color": "#fb882d"
+     }
+    },
+    {
+     "id": "capRr",
+     "parent": "capR",
+     "type": "polygon",
+     "x": 0,
+     "y": 0,
+     "z": 22,
+     "points": [
+      {
+       "x": -13,
+       "y": -5
+      },
+      {
+       "x": -8,
+       "y": -11
+      },
+      {
+       "x": 8,
+       "y": -11
+      },
+      {
+       "x": 13,
+       "y": -5
+      },
+      {
+       "x": 13,
+       "y": 5
+      },
+      {
+       "x": 8,
+       "y": 11
+      },
+      {
+       "x": -8,
+       "y": 11
+      },
+      {
+       "x": -13,
+       "y": 5
+      }
+     ],
+     "stroke": {
+      "color": "#45a3fa",
+      "thickness": 1.2,
+      "join": "miter"
+     }
+    },
+    {
+     "id": "capRe",
+     "parent": "capR",
+     "type": "rect",
+     "x": 0,
+     "y": -9.5,
+     "width": 14,
+     "height": 1.5,
+     "z": 23,
+     "fill": {
+      "color": "#e3e9ee"
+     },
+     "opacity": 0.7
+    },
+    {
+     "id": "barF",
+     "parent": "bar",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 100,
+     "height": 14,
+     "z": 10,
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": 0,
+        "y": -7
+       },
+       "end": {
+        "x": 0,
+        "y": 7
+       },
+       "stops": [
+        {
+         "color": "#34485e",
+         "position": 0
+        },
+        {
+         "color": "#16212e",
+         "position": 0.5
+        },
+        {
+         "color": "#0a1119",
+         "position": 1
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "barH",
+     "parent": "bar",
+     "type": "rect",
+     "x": 0,
+     "y": -6.25,
+     "width": 100,
+     "height": 1.5,
+     "z": 11,
+     "fill": {
+      "color": "#45a3fa"
+     }
+    },
+    {
+     "id": "barCore",
+     "parent": "bar",
+     "type": "rect",
+     "x": 0,
+     "y": 1,
+     "width": 94,
+     "height": 3,
+     "z": 11,
+     "fill": {
+      "gradient": {
+       "type": "linear",
+       "start": {
+        "x": -47,
+        "y": 0
+       },
+       "end": {
+        "x": 47,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#3312c7bf"
+        },
+        {
+         "color": "#12c7bf",
+         "position": 0.5
+        },
+        {
+         "color": "#3312c7bf"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "id": "energy",
+     "parent": "bar",
+     "type": "polygon",
+     "x": 0,
+     "y": 1,
+     "closed": false,
+     "z": 12,
+     "points": [
+      {
+       "x": -47,
+       "y": 0
+      },
+      {
+       "x": 47,
+       "y": 0
+      }
+     ],
+     "stroke": {
+      "color": "#ffffff",
+      "thickness": 2,
+      "cap": "butt",
+      "trim": {
+       "start": 0,
+       "end": 0.18,
+       "offset": 0
+      }
+     }
+    },
+    {
+     "id": "flash",
+     "parent": "paddle",
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "width": 300,
+     "height": 22,
+     "z": 30,
+     "opacity": 0,
+     "fill": {
+      "gradient": {
+       "type": "radial",
+       "start": {
+        "x": 0,
+        "y": 0
+       },
+       "end": {
+        "x": 150,
+        "y": 0
+       },
+       "stops": [
+        {
+         "color": "#ffffff"
+        },
+        {
+         "color": "#0012c7bf"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "animations": [
+    {
+     "name": "sizeMin",
+     "fps": 60,
+     "duration": 1,
+     "loop": "oneShot",
+     "tracks": [
+      {
+       "target": "bar",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 0.6
+        }
+       ]
+      },
+      {
+       "target": "capL",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -30
+        }
+       ]
+      },
+      {
+       "target": "capR",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 30
+        }
+       ]
+      },
+      {
+       "target": "glow",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 0.4
+        }
+       ]
+      },
+      {
+       "target": "magnet",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 0.26666666666666666
+        }
+       ]
+      },
+      {
+       "target": "flash",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 0.3
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "sizeMax",
+     "fps": 60,
+     "duration": 1,
+     "loop": "oneShot",
+     "tracks": [
+      {
+       "target": "bar",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 2.8
+        }
+       ]
+      },
+      {
+       "target": "capL",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -140
+        }
+       ]
+      },
+      {
+       "target": "capR",
+       "property": "x",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 140
+        }
+       ]
+      },
+      {
+       "target": "glow",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1.1333333333333333
+        }
+       ]
+      },
+      {
+       "target": "magnet",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        }
+       ]
+      },
+      {
+       "target": "flash",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1.0333333333333334
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "idle",
+     "fps": 60,
+     "duration": 150,
+     "loop": "loop",
+     "presets": [
+      {
+       "preset": "glow-pulse",
+       "target": "glow",
+       "cycleSeconds": 2.5
+      }
+     ],
+     "tracks": [
+      {
+       "target": "energy",
+       "property": "trimOffset",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 0
+        },
+        {
+         "frame": 75,
+         "value": 1,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 150,
+         "value": 2,
+         "easing": "ease-in-out"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "hit",
+     "fps": 60,
+     "duration": 24,
+     "loop": "oneShot",
+     "tracks": [
+      {
+       "target": "paddle",
+       "property": "scaleY",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 4,
+         "value": 0.7,
+         "easing": "ease-out"
+        },
+        {
+         "frame": 12,
+         "value": 1.1,
+         "easing": "ease-out"
+        },
+        {
+         "frame": 24,
+         "value": 1,
+         "easing": "ease-in-out"
+        }
+       ]
+      },
+      {
+       "target": "paddle",
+       "property": "scaleX",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 4,
+         "value": 1.06,
+         "easing": "ease-out"
+        },
+        {
+         "frame": 12,
+         "value": 0.98,
+         "easing": "ease-out"
+        },
+        {
+         "frame": 24,
+         "value": 1,
+         "easing": "ease-in-out"
+        }
+       ]
+      },
+      {
+       "target": "flash",
+       "property": "opacity",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 0
+        },
+        {
+         "frame": 2,
+         "value": 0.9,
+         "easing": "ease-out"
+        },
+        {
+         "frame": 20,
+         "value": 0,
+         "easing": "ease-in"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "gunsHidden",
+     "fps": 60,
+     "duration": 1,
+     "loop": "oneShot",
+     "tracks": [
+      {
+       "target": "gunL",
+       "property": "opacity",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 0
+        }
+       ]
+      },
+      {
+       "target": "gunL",
+       "property": "y",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 4
+        }
+       ]
+      },
+      {
+       "target": "gunR",
+       "property": "opacity",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 0
+        }
+       ]
+      },
+      {
+       "target": "gunR",
+       "property": "y",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 4
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "gunsOn",
+     "fps": 60,
+     "duration": 16,
+     "loop": "oneShot",
+     "tracks": [
+      {
+       "target": "gunL",
+       "property": "opacity",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 0
+        },
+        {
+         "frame": 8,
+         "value": 1,
+         "easing": "ease-out"
+        }
+       ]
+      },
+      {
+       "target": "gunL",
+       "property": "y",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 4
+        },
+        {
+         "frame": 16,
+         "value": -8,
+         "easing": "ease-out-back"
+        }
+       ]
+      },
+      {
+       "target": "gunR",
+       "property": "opacity",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 0
+        },
+        {
+         "frame": 8,
+         "value": 1,
+         "easing": "ease-out"
+        }
+       ]
+      },
+      {
+       "target": "gunR",
+       "property": "y",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 4
+        },
+        {
+         "frame": 16,
+         "value": -8,
+         "easing": "ease-out-back"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "gunsOff",
+     "fps": 60,
+     "duration": 10,
+     "loop": "oneShot",
+     "tracks": [
+      {
+       "target": "gunL",
+       "property": "opacity",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 8,
+         "value": 0,
+         "easing": "ease-in"
+        }
+       ]
+      },
+      {
+       "target": "gunL",
+       "property": "y",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -8
+        },
+        {
+         "frame": 10,
+         "value": 4,
+         "easing": "emphasized-accel"
+        }
+       ]
+      },
+      {
+       "target": "gunR",
+       "property": "opacity",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 1
+        },
+        {
+         "frame": 8,
+         "value": 0,
+         "easing": "ease-in"
+        }
+       ]
+      },
+      {
+       "target": "gunR",
+       "property": "y",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": -8
+        },
+        {
+         "frame": 10,
+         "value": 4,
+         "easing": "emphasized-accel"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "magnetOn",
+     "fps": 60,
+     "duration": 60,
+     "loop": "loop",
+     "tracks": [
+      {
+       "target": "magnet",
+       "property": "opacity",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 0.35
+        },
+        {
+         "frame": 30,
+         "value": 0.95,
+         "easing": "ease-in-out"
+        },
+        {
+         "frame": 60,
+         "value": 0.35,
+         "easing": "ease-in-out"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "magnetOff",
+     "fps": 60,
+     "duration": 8,
+     "loop": "oneShot",
+     "tracks": [
+      {
+       "target": "magnet",
+       "property": "opacity",
+       "keyframes": [
+        {
+         "frame": 0,
+         "value": 0.35
+        },
+        {
+         "frame": 8,
+         "value": 0,
+         "easing": "ease-in"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "stateMachine": {
+    "name": "PaddleSM",
+    "inputs": [
+     {
+      "name": "size",
+      "type": "number",
+      "initial": 20
+     },
+     {
+      "name": "hit",
+      "type": "trigger"
+     },
+     {
+      "name": "laser",
+      "type": "bool"
+     },
+     {
+      "name": "magnet",
+      "type": "bool"
+     }
+    ],
+    "layers": [
+     {
+      "name": "Size",
+      "states": [
+       {
+        "name": "sized",
+        "blend1d": {
+         "input": "size",
+         "animations": [
+          {
+           "animation": "sizeMin",
+           "value": 0
+          },
+          {
+           "animation": "sizeMax",
+           "value": 100
+          }
+         ]
+        }
+       }
+      ],
+      "transitions": [
+       {
+        "from": "entry",
+        "to": "sized"
+       }
+      ]
+     },
+     {
+      "name": "FX",
+      "states": [
+       {
+        "name": "idle",
+        "animation": "idle"
+       },
+       {
+        "name": "hit",
+        "animation": "hit"
+       }
+      ],
+      "transitions": [
+       {
+        "from": "entry",
+        "to": "idle"
+       },
+       {
+        "from": "any",
+        "to": "hit",
+        "condition": {
+         "input": "hit"
+        }
+       },
+       {
+        "from": "hit",
+        "to": "idle",
+        "exitTimeMs": 400
+       }
+      ]
+     },
+     {
+      "name": "Laser",
+      "states": [
+       {
+        "name": "off",
+        "animation": "gunsHidden"
+       },
+       {
+        "name": "on",
+        "animation": "gunsOn"
+       },
+       {
+        "name": "retract",
+        "animation": "gunsOff"
+       }
+      ],
+      "transitions": [
+       {
+        "from": "entry",
+        "to": "off"
+       },
+       {
+        "from": "off",
+        "to": "on",
+        "condition": {
+         "input": "laser",
+         "value": true
+        }
+       },
+       {
+        "from": "on",
+        "to": "retract",
+        "condition": {
+         "input": "laser",
+         "value": false
+        }
+       },
+       {
+        "from": "retract",
+        "to": "on",
+        "condition": {
+         "input": "laser",
+         "value": true
+        }
+       },
+       {
+        "from": "retract",
+        "to": "off",
+        "exitTimeMs": 170
+       }
+      ]
+     },
+     {
+      "name": "Magnet",
+      "states": [
+       {
+        "name": "off",
+        "animation": "magnetOff"
+       },
+       {
+        "name": "on",
+        "animation": "magnetOn"
+       }
+      ],
+      "transitions": [
+       {
+        "from": "entry",
+        "to": "off"
+       },
+       {
+        "from": "off",
+        "to": "on",
+        "condition": {
+         "input": "magnet",
+         "value": true
+        }
+       },
+       {
+        "from": "on",
+        "to": "off",
+        "condition": {
+         "input": "magnet",
+         "value": false
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "name": "PaddleHUD",
+   "width": 320,
+   "height": 96
   }
  ],
  "fonts": [
