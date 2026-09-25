@@ -39,6 +39,13 @@
    "parent": "capR",
    "x": 0,
    "y": -4
+  },
+  {
+   "id": "field",
+   "parent": "paddle",
+   "x": 0,
+   "y": -16,
+   "opacity": 0
   }
  ],
  "shapes": [
@@ -71,39 +78,6 @@
       {
        "color": "#008a6aed",
        "position": 1
-      }
-     ]
-    }
-   }
-  },
-  {
-   "id": "magnet",
-   "parent": "paddle",
-   "type": "rect",
-   "x": 0,
-   "y": -10,
-   "width": 300,
-   "height": 10,
-   "cornerRadius": 5,
-   "z": 2,
-   "opacity": 0,
-   "fill": {
-    "gradient": {
-     "type": "linear",
-     "start": {
-      "x": 0,
-      "y": -5
-     },
-     "end": {
-      "x": 0,
-      "y": 5
-     },
-     "stops": [
-      {
-       "color": "#0016bdfa"
-      },
-      {
-       "color": "#16bdfa"
       }
      ]
     }
@@ -470,6 +444,121 @@
      ]
     }
    }
+  },
+  {
+   "parent": "field",
+   "id": "fGlow",
+   "type": "rect",
+   "x": 0,
+   "y": 0,
+   "width": 300,
+   "height": 16,
+   "cornerRadius": 8,
+   "z": 3,
+   "fill": {
+    "gradient": {
+     "type": "linear",
+     "start": {
+      "x": 0,
+      "y": -8
+     },
+     "end": {
+      "x": 0,
+      "y": 8
+     },
+     "stops": [
+      {
+       "color": "#0016bdfa"
+      },
+      {
+       "color": "#7316bdfa",
+       "position": 0.5
+      },
+      {
+       "color": "#0016bdfa"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "parent": "field",
+   "id": "fBand",
+   "type": "rect",
+   "x": 0,
+   "y": 0,
+   "width": 300,
+   "height": 6,
+   "cornerRadius": 3,
+   "z": 4,
+   "fill": {
+    "gradient": {
+     "type": "linear",
+     "start": {
+      "x": -150,
+      "y": 0
+     },
+     "end": {
+      "x": 150,
+      "y": 0
+     },
+     "stops": [
+      {
+       "color": "#5916bdfa"
+      },
+      {
+       "color": "#16bdfa",
+       "position": 0.5
+      },
+      {
+       "color": "#5916bdfa"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "parent": "field",
+   "id": "fCore",
+   "type": "rect",
+   "x": 0,
+   "y": 0,
+   "width": 296,
+   "height": 1.5,
+   "z": 5,
+   "fill": {
+    "color": "#ffffff"
+   },
+   "opacity": 0.8
+  },
+  {
+   "parent": "field",
+   "id": "fSpark",
+   "type": "polygon",
+   "x": 0,
+   "y": 0,
+   "closed": false,
+   "z": 6,
+   "points": [
+    {
+     "x": -148,
+     "y": 0
+    },
+    {
+     "x": 148,
+     "y": 0
+    }
+   ],
+   "stroke": {
+    "color": "#ffffff",
+    "thickness": 3,
+    "cap": "round",
+    "trim": {
+     "start": 0,
+     "end": 0.1,
+     "offset": 0
+    }
+   }
   }
  ],
  "animations": [
@@ -520,7 +609,7 @@
      ]
     },
     {
-     "target": "magnet",
+     "target": "field",
      "property": "scaleX",
      "keyframes": [
       {
@@ -588,7 +677,7 @@
      ]
     },
     {
-     "target": "magnet",
+     "target": "field",
      "property": "scaleX",
      "keyframes": [
       {
@@ -907,51 +996,183 @@
    ]
   },
   {
-   "name": "magnetOn",
+   "name": "fieldHidden",
    "fps": 60,
-   "duration": 60,
-   "loop": "loop",
+   "duration": 1,
+   "loop": "oneShot",
    "tracks": [
     {
-     "target": "magnet",
+     "target": "field",
      "property": "opacity",
      "keyframes": [
       {
        "frame": 0,
-       "value": 0.35
-      },
+       "value": 0
+      }
+     ]
+    },
+    {
+     "target": "field",
+     "property": "scaleY",
+     "keyframes": [
       {
-       "frame": 30,
-       "value": 0.95,
-       "easing": "ease-in-out"
-      },
-      {
-       "frame": 60,
-       "value": 0.35,
-       "easing": "ease-in-out"
+       "frame": 0,
+       "value": 0.1
       }
      ]
     }
    ]
   },
   {
-   "name": "magnetOff",
+   "name": "fieldUp",
    "fps": 60,
-   "duration": 8,
+   "duration": 24,
    "loop": "oneShot",
    "tracks": [
     {
-     "target": "magnet",
+     "target": "field",
      "property": "opacity",
      "keyframes": [
       {
        "frame": 0,
-       "value": 0.35
+       "value": 0
       },
       {
-       "frame": 8,
+       "frame": 6,
+       "value": 1,
+       "easing": "ease-out"
+      }
+     ]
+    },
+    {
+     "target": "field",
+     "property": "scaleY",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0.1
+      },
+      {
+       "frame": 24,
+       "value": 1,
+       "easing": "elastic-out",
+       "amplitude": 1,
+       "period": 0.3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "fieldOn",
+   "fps": 60,
+   "duration": 72,
+   "loop": "loop",
+   "tracks": [
+    {
+     "target": "field",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 1
+      },
+      {
+       "frame": 72,
+       "value": 1
+      }
+     ]
+    },
+    {
+     "target": "fBand",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0.7
+      },
+      {
+       "frame": 36,
+       "value": 1,
+       "easing": "ease-in-out"
+      },
+      {
+       "frame": 72,
+       "value": 0.7,
+       "easing": "ease-in-out"
+      }
+     ]
+    },
+    {
+     "target": "fGlow",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0.5
+      },
+      {
+       "frame": 36,
+       "value": 1,
+       "easing": "ease-in-out"
+      },
+      {
+       "frame": 72,
+       "value": 0.5,
+       "easing": "ease-in-out"
+      }
+     ]
+    },
+    {
+     "target": "fSpark",
+     "property": "trimOffset",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 0
+      },
+      {
+       "frame": 72,
+       "value": 1,
+       "easing": "linear"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "fieldDown",
+   "fps": 60,
+   "duration": 12,
+   "loop": "oneShot",
+   "tracks": [
+    {
+     "target": "field",
+     "property": "opacity",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 1
+      },
+      {
+       "frame": 12,
        "value": 0,
        "easing": "ease-in"
+      }
+     ]
+    },
+    {
+     "target": "field",
+     "property": "scaleY",
+     "keyframes": [
+      {
+       "frame": 0,
+       "value": 1
+      },
+      {
+       "frame": 12,
+       "value": 0.1,
+       "easing": "emphasized-accel"
       }
      ]
     }
@@ -1095,11 +1316,19 @@
     "states": [
      {
       "name": "off",
-      "animation": "magnetOff"
+      "animation": "fieldHidden"
+     },
+     {
+      "name": "up",
+      "animation": "fieldUp"
      },
      {
       "name": "on",
-      "animation": "magnetOn"
+      "animation": "fieldOn"
+     },
+     {
+      "name": "down",
+      "animation": "fieldDown"
      }
     ],
     "transitions": [
@@ -1109,18 +1338,44 @@
      },
      {
       "from": "off",
-      "to": "on",
+      "to": "up",
       "condition": {
        "input": "magnet",
        "value": true
       }
      },
      {
+      "from": "up",
+      "to": "on",
+      "exitTimeMs": 400
+     },
+     {
       "from": "on",
-      "to": "off",
+      "to": "down",
       "condition": {
        "input": "magnet",
        "value": false
+      }
+     },
+     {
+      "from": "up",
+      "to": "down",
+      "condition": {
+       "input": "magnet",
+       "value": false
+      }
+     },
+     {
+      "from": "down",
+      "to": "off",
+      "exitTimeMs": 200
+     },
+     {
+      "from": "down",
+      "to": "up",
+      "condition": {
+       "input": "magnet",
+       "value": true
       }
      }
     ]

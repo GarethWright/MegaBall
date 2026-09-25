@@ -59,9 +59,28 @@ The build strips Rive blend modes. The Canvas2D renderer rasterises them very sl
 
 ## Power-ups
 
-**E** Expand · **S** Slow · **C** Catch · **L** Laser · **M** Multiball · **B** Mega ball (smashes through bricks) · **P** Extra life. Two are bad: **X** Shrink and **F** Fast.
+All 14 capsules from the original Megaball v3.0 are here, colour-coded as they were: blue is good, red is bad and yellow changes the bat.
 
-As in the original, the ball speeds up a little every time it comes back off the paddle. The speed resets when you lose a ball and never goes above 680 px/s.
+| Capsule | Effect |
+|---|---|
+| **S** Slow Ball | Slows the ball down. |
+| **N** Next Board | Warps you to the next round and pays the round bonus. |
+| **L** Lasers | Fires twin lasers with Space or a click. |
+| **G** Gravity Ball *(bad)* | The ball falls in arcs. |
+| **C** Catch Ball | An energy field across the top of the bat catches the ball. In the HUD view this is an animated forcefield. |
+| **Q** New Quicksand *(bad)* | The whole wall sinks toward you. Catching another one restarts the sink. |
+| **D** Diet Pill *(yellow)* | Shrinks the bat. |
+| **K** Kill (you) *(bad)* | You lose a life on the spot. |
+| **P** Get a Life | Adds an extra life. |
+| **E** Expand Paddle *(yellow)* | Widens the bat. |
+| **B** Brickthrough | The ball smashes straight through bricks. |
+| **Z** Zap Gold | Destroys every gold brick. This capsule only drops while gold bricks remain. |
+| **T** Dynamite | The next brick the ball hits explodes. |
+| **U** Magnetism *(bad)* | The bat repels the ball sideways as it comes down. |
+
+Neo adds two extras: **M** Multiball and **F** Fast Ball *(bad)*. Mystery bricks only drop good capsules.
+
+In the HUD view the capsules are glass chips with Material Symbols icons (via Iconify, imported by rive-mcp's `riv_asset_search`). In the ARCADE view they are lettered pills.
 
 Bricks come in these kinds: rainbow, silver (takes several hits), gold (indestructible), ✸ explosive (chain reaction), and ? mystery (always drops a capsule). There are 8 rounds, and they loop at a higher speed.
 

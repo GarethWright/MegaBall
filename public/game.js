@@ -90,12 +90,29 @@ const banner = {
 let title = null;
 const newTitle = () => (view === "hud" ? new RiveActor(fHud, "TitleHUD", "TitleSM") : new RiveActor(fTitle, "Title", "TitleSM"));
 
+// All 14 original Megaball capsules plus Neo's Multiball and Fast. cls follows the original colour code:
+// good = blue, bad = red, size = yellow. w = drop weight.
 const KINDS = {
-  E: { name: "EXPAND", good: true }, S: { name: "SLOW", good: true }, C: { name: "CATCH", good: true },
-  L: { name: "LASER", good: true }, M: { name: "MULTIBALL", good: true }, B: { name: "MEGA BALL", good: true },
-  P: { name: "EXTRA LIFE", good: true }, X: { name: "SHRINK", good: false }, F: { name: "FAST", good: false },
+  S: { name: "SLOW BALL", short: "SLOW", cls: "good", w: 6 },
+  N: { name: "NEXT BOARD", short: "NEXT", cls: "good", w: 1.2 },
+  L: { name: "LASERS", short: "LASERS", cls: "good", w: 6 },
+  G: { name: "GRAVITY BALL", short: "GRAVITY", cls: "bad", w: 4 },
+  C: { name: "CATCH BALL", short: "CATCH", cls: "good", w: 6 },
+  Q: { name: "QUICKSAND", short: "QUICKSAND", cls: "bad", w: 3 },
+  D: { name: "DIET PILL", short: "DIET PILL", cls: "size", w: 4 },
+  K: { name: "KILL (YOU)", short: "KILL", cls: "bad", w: 1.2 },
+  P: { name: "GET A LIFE", short: "LIFE", cls: "good", w: 1.5 },
+  E: { name: "EXPAND PADDLE", short: "EXPAND", cls: "size", w: 6 },
+  B: { name: "BRICKTHROUGH", short: "THROUGH", cls: "good", w: 4 },
+  Z: { name: "ZAP GOLD", short: "ZAP GOLD", cls: "good", w: 2 },
+  T: { name: "DYNAMITE", short: "DYNAMITE", cls: "good", w: 4 },
+  U: { name: "MAGNETISM", short: "MAGNETISM", cls: "bad", w: 3 },
+  M: { name: "MULTIBALL", short: "MULTI", cls: "good", w: 5 },
+  F: { name: "FAST BALL", short: "FAST", cls: "bad", w: 4 },
 };
-const legend = Object.keys(KINDS).map((k) => ({ k, actor: new RiveActor(fCaps, `Cap${k}`, "CapSM") }));
+for (const k in KINDS) KINDS[k].good = KINDS[k].cls !== "bad";
+const capActors = (k) => ({ arcade: new RiveActor(fCaps, `Cap${k}`, "CapSM"), hud: new RiveActor(fHud, `Hud${k}`, "CapSM") });
+const legend = Object.keys(KINDS).map((k) => ({ k, ...capActors(k) }));
 
 // ------------------------------------------------------------------ canvas sizing
 let scale = 1;
@@ -278,7 +295,8 @@ const S = {
   score: 0, lives: 3, round: 0, nextLifeAt: 20000,
   bricks: [], balls: [], caps: [], bolts: [], parts: [], popups: [],
   paddle: { x: W / 2, size: SIZE.normal, target: SIZE.normal, vx: 0 },
-  fx: { laser: 0, catch: 0, slow: 0, fast: 0, mega: 0 },
+  fx: { laser: 0, catch: 0, slow: 0, fast: 0, mega: 0, gravity: 0, quicksand: 0, repel: 0, dynamite: 0 },
+  sink: 0, pending: [],
   shake: 0, flash: 0, time: 0, modeT: 0, laserCd: 0, hits: 0, returns: 0, paused: false,
   runT: 0, log: [], hist: new Array(48).fill(0), histT: 0,
 };
@@ -304,6 +322,7 @@ function loadRound(n) {
     S.bricks.push(b);
   }));
   S.grid = new Map(S.bricks.map((b) => [`${b.r},${b.c}`, b]));
+  S.sink = 0;
 }
 
 function baseSpeed() {
@@ -315,9 +334,9 @@ function baseSpeed() {
 }
 
 function resetPaddleFx() {
-  S.fx = { laser: 0, catch: 0, slow: 0, fast: 0, mega: 0 };
+  S.fx = { laser: 0, catch: 0, slow: 0, fast: 0, mega: 0, gravity: 0, quicksand: 0, repel: 0, dynamite: 0 };
   S.paddle.target = SIZE.normal;
-  for (const c of S.caps) c.actor.dispose();
+  for (const c of S.caps) { c.arcade.dispose(); c.hud.dispose(); }
   S.caps = []; S.bolts = [];
 }
 
@@ -477,27 +496,46 @@ function explode(b) {
 
 function dropCapsule(x, y, rare) {
   if (S.caps.length >= 3 || S.balls.length > 6) return;
-  const pool = rare ? "EEMMLLBBCP" : "EEESSCCLLMMBXXFFP";
-  let k = pool[Math.floor(Math.random() * pool.length)];
-  if (k === "P" && Math.random() < 0.5) k = "E";
-  S.caps.push({ k, x, y, vy: 140, actor: new RiveActor(fCaps, `Cap${k}`, "CapSM") });
+  const hasGold = S.bricks.some((b) => b.alive && b.type === "g");
+  // mystery bricks only drop good capsules; Zap Gold only drops when there is gold to zap
+  const pool = Object.entries(KINDS).filter(([k, v]) => (!rare || v.cls !== "bad") && (k !== "Z" || hasGold));
+  let roll = Math.random() * pool.reduce((a, [, v]) => a + v.w, 0), k = pool[0][0];
+  for (const [kk, v] of pool) { roll -= v.w; if (roll <= 0) { k = kk; break; } }
+  S.caps.push({ k, x, y, vy: 140, ...capActors(k) });
 }
 
 function applyCapsule(k) {
   const good = KINDS[k].good;
   Sound.power(good);
   addScore(good ? 100 : 250);
-  popup(S.paddle.x, PADDLE_Y - 44, KINDS[k].name, good ? P.accent : WARM.accent[0]);
-  logEvent(KINDS[k].name, `CAPSULE ${k}`, good ? "good" : "bad");
+  const cls = KINDS[k].cls;
+  popup(S.paddle.x, PADDLE_Y - 44, KINDS[k].name, view === "hud" ? (cls === "bad" ? HUD.red : cls === "size" ? HUD.orange : HP.primary) : good ? P.accent : WARM.accent[0]);
+  logEvent(KINDS[k].name, `CAPSULE ${k}`, cls === "bad" ? "bad" : cls === "size" ? "warn" : "good");
   paddleActor.fire("hit");
   switch (k) {
     case "E": S.paddle.target = SIZE.expand; break;
-    case "X": S.paddle.target = SIZE.shrink; break;
+    case "D": S.paddle.target = SIZE.shrink; break;
+    case "N": S.pending.push("next"); break;
+    case "K": S.pending.push("kill"); break;
+    case "G": S.fx.gravity = 12; break;
+    case "Q": S.fx.quicksand = 12; break; // a new quicksand restarts the sink
+    case "U": S.fx.repel = 12; break;
+    case "T": S.fx.dynamite = 20; break;
+    case "Z": {
+      const golds = S.bricks.filter((b) => b.alive && b.type === "g");
+      golds.forEach((b, i) => setTimeout(() => {
+        if (!b.alive) return;
+        Object.assign(b, { type: "n", color: 2, hp: 1, pts: 100 });
+        damage(b, true);
+        ping(b.x + BW / 2, b.y + BH / 2, view === "hud" ? HUD.orange : WARM.primary[0], 40, 0.4, 2);
+      }, i * 45));
+      break;
+    }
     case "S": S.fx.slow = 12; S.fx.fast = 0; retime(); break;
     case "F": S.fx.fast = 10; S.fx.slow = 0; retime(); break;
     case "C": S.fx.catch = 15; break;
     case "L": S.fx.laser = 12; break;
-    case "B": S.fx.mega = 10; break;
+    case "B": S.fx.mega = 10; break; // Brickthrough
     case "P": S.lives++; popup(S.paddle.x, PADDLE_Y - 70, "1UP!", P.accent); break;
     case "M": {
       const extra = [];
@@ -549,6 +587,17 @@ function update(dt) {
   for (const b of S.balls) {
     if (b.stuck) { b.x = pd.x + b.offset; b.y = PADDLE_Y - 12 - BALL_R; b.trail.length = 0; continue; }
     b.trail.push({ x: b.x, y: b.y }); if (b.trail.length > 12) b.trail.shift();
+    // Gravity Ball: the ball falls in arcs
+    if (S.fx.gravity > 0) b.vy += 420 * dt;
+    // Magnetism: the bat repels a descending ball sideways
+    if (S.fx.repel > 0 && b.vy > 0 && b.y > 360) {
+      const dx = b.x - pd.x;
+      b.vx += Math.sign(dx || 1) * 950 * dt * clamp(1 - Math.abs(dx) / 260, 0, 1);
+    }
+    if (S.fx.gravity > 0 || S.fx.repel > 0) {
+      const m = Math.hypot(b.vx, b.vy);
+      if (m > MAX_BALL_SPEED) { b.vx *= MAX_BALL_SPEED / m; b.vy *= MAX_BALL_SPEED / m; }
+    }
     const dist = Math.hypot(b.vx, b.vy) * dt, steps = Math.max(1, Math.ceil(dist / 4));
     for (let i = 0; i < steps && !b.dead && !b.stuck; i++) stepBall(b, dt / steps, half);
   }
@@ -558,17 +607,29 @@ function update(dt) {
 
   // capsules
   for (const c of S.caps) {
-    c.y += c.vy * dt; c.actor.advance(dt);
+    c.y += c.vy * dt; c.arcade.advance(dt); c.hud.advance(dt);
     if (c.y + 12 >= PADDLE_Y - 12 && c.y - 12 <= PADDLE_Y + 12 && Math.abs(c.x - pd.x) <= half + 30) { c.got = true; applyCapsule(c.k); }
-    if (c.got || c.y > H + 30) { c.dead = true; c.actor.dispose(); }
+    if (c.got || c.y > H + 30) { c.dead = true; c.arcade.dispose(); c.hud.dispose(); }
   }
   S.caps = S.caps.filter((c) => !c.dead);
+  // capsules that tear down the round run after the capsule loop
+  for (const act of S.pending.splice(0)) {
+    if (S.mode !== "play" && S.mode !== "ready") continue;
+    if (act === "kill") { S.balls = []; loseLife(); }
+    if (act === "next") { S.balls = []; roundClear(true); }
+  }
+  // quicksand: the wall sinks toward the bat (stops well short of it)
+  if (S.fx.quicksand > 0 && S.mode === "play") {
+    const lowest = Math.max(0, ...S.bricks.filter((b) => b.alive).map((b) => BRICK_TOP + (b.r + 1) * BH));
+    S.sink = Math.min(S.sink + 9 * dt, Math.max(S.sink, PADDLE_Y - 150 - lowest));
+  }
+  for (const b of S.bricks) b.y = BRICK_TOP + b.r * BH + S.sink;
 
   // lasers
   for (const l of S.bolts) {
     l.y -= 950 * dt; l.age += dt;
     if (l.y < FIELD.top) l.dead = true;
-    const c = Math.floor((l.x - FIELD.left) / BW), r = Math.floor((l.y - BRICK_TOP) / BH);
+    const c = Math.floor((l.x - FIELD.left) / BW), r = Math.floor((l.y - BRICK_TOP - S.sink) / BH);
     const br = S.grid.get(`${r},${c}`);
     if (br && br.alive) {
       damage(br); l.dead = true;
@@ -618,7 +679,7 @@ function stepBall(b, dt, half) {
 
   // bricks: test the cells the ball overlaps
   const c0 = Math.floor((b.x - BALL_R - FIELD.left) / BW), c1 = Math.floor((b.x + BALL_R - FIELD.left) / BW);
-  const r0 = Math.floor((b.y - BALL_R - BRICK_TOP) / BH), r1 = Math.floor((b.y + BALL_R - BRICK_TOP) / BH);
+  const r0 = Math.floor((b.y - BALL_R - BRICK_TOP - S.sink) / BH), r1 = Math.floor((b.y + BALL_R - BRICK_TOP - S.sink) / BH);
   for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) {
     const br = S.grid.get(`${r},${c}`);
     if (!br || !br.alive) continue;
@@ -627,6 +688,7 @@ function stepBall(b, dt, half) {
     if (dx * dx + dy * dy > BALL_R * BALL_R) continue;
     S.hits++;
     const mega = S.fx.mega > 0 && br.type !== "g";
+    if (S.fx.dynamite > 0) { S.fx.dynamite = 0; explode(br); }
     damage(br, mega);
     if (mega) continue;
     // resolve against the side we came from
@@ -661,16 +723,16 @@ function loseLife() {
   showBanner(S.lives === 0 ? "LAST BALL" : "GET READY", `${S.lives} ${S.lives === 1 ? "LIFE" : "LIVES"} IN RESERVE`, "flash");
 }
 
-function roundClear() {
+function roundClear(warp = false) {
   const bonus = 1000 * (S.round + 1);
   addScore(bonus);
   setMode("clear");
   Sound.clear();
-  showBanner("ROUND CLEAR", `BONUS +${fmt(bonus)}`, "flash");
-  logEvent(`SECTOR CLEAR +${fmt(bonus)}`, "SECTOR", "good");
+  showBanner(warp ? "NEXT BOARD" : "ROUND CLEAR", `${warp ? "WARP  ·  " : ""}BONUS +${fmt(bonus)}`, "flash");
+  logEvent(`${warp ? "WARP" : "SECTOR CLEAR"} +${fmt(bonus)}`, "SECTOR", "good");
   for (const b of S.balls) burst(b.x, b.y, P.accent, 30, 400);
   S.balls = []; S.bolts = [];
-  for (const c of S.caps) c.actor.dispose();
+  for (const c of S.caps) { c.arcade.dispose(); c.hud.dispose(); }
   S.caps = [];
 }
 
@@ -842,7 +904,8 @@ function drawHud() {
     ctx.fillStyle = P.accent; rrect(ctx, x, y, 8, 10, 3); ctx.fill(); rrect(ctx, x + 28, y, 8, 10, 3); ctx.fill();
   }
   label("ACTIVE", 50, 460);
-  const active = [["LASER", S.fx.laser, 12], ["CATCH", S.fx.catch, 15], ["MEGA", S.fx.mega, 10], ["SLOW", S.fx.slow, 12], ["FAST", S.fx.fast, 10]].filter((a) => a[1] > 0);
+  const active = [["LASER", S.fx.laser, 12], ["CATCH", S.fx.catch, 15], ["THRU", S.fx.mega, 10], ["TNT", S.fx.dynamite, 20], ["SLOW", S.fx.slow, 12],
+    ["FAST", S.fx.fast, 10], ["GRAV", S.fx.gravity, 12], ["SAND", S.fx.quicksand, 12], ["MAGNET", S.fx.repel, 12]].filter((a) => a[1] > 0);
   if (!active.length) { ctx.fillStyle = P.outline; ctx.font = '12px "InterMB"'; ctx.fillText("—", 50, 484); }
   active.slice(0, 2).forEach(([n, t, max], i) => {
     const y = 474 + i * 22;
@@ -851,14 +914,15 @@ function drawHud() {
     ctx.fillStyle = n === "FAST" ? WARM.accent[1] : P.accent; rrect(ctx, 102, y + 2, 118 * (t / max), 6, 3); ctx.fill();
   });
 
-  panel(956, 64, 216, 460);
-  label("CAPSULES", 978, 104);
+  panel(956, 64, 216, 700);
+  label("CAPSULES", 978, 96);
   legend.forEach(({ k }, i) => {
-    ctx.fillStyle = KINDS[k].good ? P.text : WARM.accent[0]; ctx.font = '600 13px "InterMB"';
-    ctx.fillText(KINDS[k].name, 1054, 136 + i * 42);
+    const cls = KINDS[k].cls;
+    ctx.fillStyle = cls === "bad" ? WARM.accent[0] : cls === "size" ? "#ffd36b" : P.text; ctx.font = '600 12px "InterMB"';
+    ctx.fillText(KINDS[k].name, 1028, 123 + i * 38);
   });
   ctx.fillStyle = P.textMuted; ctx.font = '11px "InterMB"'; ctx.textAlign = "center";
-  ctx.fillText(Sound.muted ? "SOUND OFF · M" : "P PAUSE · M MUTE", 1064, 508);
+  ctx.fillText(Sound.muted ? "SOUND OFF · M" : "P PAUSE · M MUTE", 1064, 752);
   ctx.textAlign = "left";
 }
 
@@ -978,27 +1042,30 @@ function drawHudTelemetry() {
   txt(LEVELS[S.round % LEVELS.length].name, X + 52, Y + 56 + 2 * 60 + 48, FU(9), HP.textMuted, "left", 2);
 
   // active systems
-  let y = Y + 310;
+  let y = Y + 304;
   txt("ACTIVE SYSTEMS", X + 14, y, FU(10), HP.textMuted, "left", 4);
-  const active = [["LASER", S.fx.laser, 12, HP.primary], ["CATCH", S.fx.catch, 15, HP.primary], ["MEGA BALL", S.fx.mega, 10, HUD.orange],
-    ["SLOW", S.fx.slow, 12, HP.primary], ["FAST", S.fx.fast, 10, HUD.red]].filter((a) => a[1] > 0);
+  const active = [["LASERS", S.fx.laser, 12, HP.primary], ["CATCH", S.fx.catch, 15, HP.primary], ["THROUGH", S.fx.mega, 10, HP.primary],
+    ["DYNAMITE", S.fx.dynamite, 20, HUD.orange], ["SLOW", S.fx.slow, 12, HP.primary], ["FAST", S.fx.fast, 10, HUD.red],
+    ["GRAVITY", S.fx.gravity, 12, HUD.red], ["QUICKSAND", S.fx.quicksand, 12, HUD.red], ["MAGNETISM", S.fx.repel, 12, HUD.red]].filter((a) => a[1] > 0);
   if (!active.length) { ctx.fillStyle = HUD.green; ctx.beginPath(); ctx.arc(X + 18, y + 17, 3, 0, 7); ctx.fill(); txt("ALL SYSTEMS NOMINAL", X + 28, y + 21, FU(11), HP.textMuted, "left", 2); }
-  active.slice(0, 4).forEach(([n, t, max, c], i) => {
+  active.slice(0, 3).forEach(([n, t, max, c], i) => {
     const yy = y + 20 + i * 20;
-    txt(n, X + 14, yy, FU(11), HP.text, "left", 1);
+    txt(n, X + 14, yy, FU(11), c === HUD.red ? HUD.red : HP.text, "left", 1);
     bar(X + 88, yy - 5, 96, t / max, c);
     txt(`${t.toFixed(1)}S`, X + PW - 14, yy, FU(10), HP.textMuted, "right");
   });
+  if (active.length > 3) txt(`+${active.length - 3}`, X + PW - 14, y, FU(10), HP.textMuted, "right");
 
-  // capsule index (Rive capsules are drawn into the grid on the fx layer)
-  y = Y + 428;
+  // capsule index: the 16 capsule classes (Rive chips drawn into this grid on the fx layer)
+  y = Y + 398;
   txt("CAPSULE INDEX", X + 14, y, FU(10), HP.textMuted, "left", 4);
+  txt("16 CLASSES", X + PW - 14, y, FU(9), HP.textMuted, "right", 2);
   legend.forEach(({ k }, i) => {
-    const cx = X + 14 + (i % 3) * 68 + 34, cy = y + 12 + Math.floor(i / 3) * 42;
-    txt(KINDS[k].name, cx, cy + 28, FU(8.5), KINDS[k].good ? HP.textMuted : HUD.red, "center", 1);
+    const p = legendSlot(i), cls = KINDS[k].cls;
+    txt(KINDS[k].short, p.x + 20, p.y + 29, FU(7.5), cls === "bad" ? HUD.red : cls === "size" ? HUD.orange : HP.textMuted, "center", 0.5);
   });
 }
-const legendSlot = (i) => ({ x: 24 + 14 + (i % 3) * 68 + 34 - 22, y: 70 + 428 + 12 + Math.floor(i / 3) * 42 });
+const legendSlot = (i) => ({ x: 24 + 14 + (i % 4) * 50 + 25 - 20, y: 70 + 408 + Math.floor(i / 4) * 39 });
 
 function drawHudLedger() {
   const X = 948, Y = 70, PW = 228;
@@ -1090,6 +1157,16 @@ function drawHudField() {
   txt("DEFENCE LINE", left + 8, PADDLE_Y + 36, FU(8.5), "rgba(251,136,45,0.5)", "left", 3);
 }
 
+function drawDynamite() {
+  if (!(S.fx.dynamite > 0)) return;
+  const k = 0.5 + 0.5 * Math.sin(S.time * 14), col = view === "hud" ? HUD.red : WARM.accent[1];
+  for (const b of S.balls) {
+    ctx.save(); ctx.strokeStyle = col; ctx.globalAlpha = 0.5 + 0.5 * k; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(b.x, b.y, BALL_R + 13 + k * 3, 0, 7); ctx.stroke();
+    ctx.fillStyle = "#ffd9a8"; ctx.beginPath(); ctx.arc(b.x + rand(-4, 4), b.y - BALL_R - 3 + rand(-2, 2), 1.6, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+}
 function drawHudBalls() {
   const mega = S.fx.mega > 0;
   const mix = (a, b, t) => `rgb(${[0, 2, 4].map((i) => Math.round(parseInt(a.substr(1 + i, 2), 16) * (1 - t) + parseInt(b.substr(1 + i, 2), 16) * t)).join(",")})`;
@@ -1154,6 +1231,7 @@ function render() {
       drawHudStrips();
       drawBricks();
       drawHudBalls();
+      drawDynamite();
       drawParticles();
     }
     drawHudFrame();
@@ -1167,6 +1245,7 @@ function render() {
     drawHud();
     drawBricks();
     drawBalls();
+    drawDynamite();
     drawParticles();
   }
   if (view === "arcade") drawViewTabs();
@@ -1182,9 +1261,9 @@ function render() {
   fxRenderer.clear();
   if (S.mode === "title" && title) title.draw(fxRenderer, 0, 0);
   else {
-    if (view === "hud") legend.forEach(({ actor }, i) => { const p = legendSlot(i); actor.draw(fxRenderer, p.x - 9, p.y - 4, 0.55 * 1.0); });
-    else legend.forEach(({ actor }, i) => actor.draw(fxRenderer, 972, 110 + i * 42, 0.9));
-    for (const c of S.caps) c.actor.draw(fxRenderer, c.x - 40 + sx, c.y - 20 + sy);
+    if (view === "hud") legend.forEach((l, i) => { const p = legendSlot(i); l.hud.draw(fxRenderer, p.x, p.y, 0.5); });
+    else legend.forEach((l, i) => l.arcade.draw(fxRenderer, 964, 104 + i * 38, 0.7));
+    for (const c of S.caps) c[view].draw(fxRenderer, c.x - 40 + sx, c.y - 20 + sy);
     if (S.mode !== "over") paddleActor.draw(fxRenderer, S.paddle.x - PADDLE_CX + sx, PADDLE_Y - PADDLE_CY + sy);
   }
   banner.draw(fxRenderer, 0, 0);
@@ -1206,7 +1285,7 @@ function frame(now) {
     if (!S.paused) {
       update(dt);
       paddleActor.advance(dt);
-      for (const l of legend) l.actor.advance(dt);
+      for (const l of legend) l[view].advance(dt);
       if (title) title.advance(dt);
     }
     if (view === "hud") { orbitBack.advance(dt); orbitFront.advance(dt); } else backdrop.advance(dt);

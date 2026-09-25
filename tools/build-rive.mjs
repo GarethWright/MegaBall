@@ -3,7 +3,7 @@
 // Flow per the rive-design-guidelines skill: riv_design_tokens -> riv_create (presets) -> riv_lint -> riv_critique.
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -333,7 +333,6 @@ function hudPaddleParts(BASE, CAP) {
   const shapes = [
     { id: "glow", parent: "paddle", type: "ellipse", x: 0, y: 4, width: 300, height: 40, z: 1, opacity: 0.55,
       fill: { gradient: { type: "radial", start: { x: 0, y: 0 }, end: { x: 150, y: 0 }, stops: [{ color: alpha(HP.primaryStrong, 0.6), position: 0 }, { color: alpha(HP.primaryStrong, 0), position: 1 }] } } },
-    { id: "magnet", parent: "paddle", type: "rect", x: 0, y: -14, width: 300, height: 2, z: 2, opacity: 0, fill: { color: HP.accent } },
     ...cap("L"), ...cap("R"),
     { id: "barF", parent: "bar", type: "rect", x: 0, y: 0, width: BASE, height: 14, z: 10,
       fill: vGrad(14, [{ color: "#34485e", position: 0 }, { color: "#16212e", position: 0.5 }, { color: "#0a1119", position: 1 }]) },
@@ -348,6 +347,78 @@ function hudPaddleParts(BASE, CAP) {
   return { cap, shapes };
 }
 
+// Catch: an energy field across the top of the bat that the ball rests in. Designed 300 wide; the size
+// pose scales the "field" group to the bat. Arcade = energy bar, HUD = layered animated forcefield.
+function catchField(style) {
+  const hud = style === "hud";
+  const C = hud ? HP.accent : P.accent, WHITE = "#ffffff";
+  const F = (o) => ({ parent: "field", ...o });
+  const shapes = [], on = [];
+  if (!hud) {
+    shapes.push(
+      F({ id: "fGlow", type: "rect", x: 0, y: 0, width: 300, height: 16, cornerRadius: 8, z: 3, fill: vGrad(16, [{ color: alpha(C, 0) }, { color: alpha(C, 0.45), position: 0.5 }, { color: alpha(C, 0) }]) }),
+      F({ id: "fBand", type: "rect", x: 0, y: 0, width: 300, height: 6, cornerRadius: 3, z: 4, fill: hGrad(300, [{ color: alpha(C, 0.35) }, { color: C, position: 0.5 }, { color: alpha(C, 0.35) }]) }),
+      F({ id: "fCore", type: "rect", x: 0, y: 0, width: 296, height: 1.5, z: 5, fill: { color: WHITE }, opacity: 0.8 }),
+      F({ id: "fSpark", type: "polygon", x: 0, y: 0, closed: false, z: 6, points: [{ x: -148, y: 0 }, { x: 148, y: 0 }],
+        stroke: { color: WHITE, thickness: 3, cap: "round", trim: { start: 0, end: 0.1, offset: 0 } } }),
+    );
+    on.push(
+      { target: "fBand", property: "opacity", keyframes: [{ frame: 0, value: 0.7 }, { frame: 36, value: 1, easing: "ease-in-out" }, { frame: 72, value: 0.7, easing: "ease-in-out" }] },
+      { target: "fGlow", property: "opacity", keyframes: [{ frame: 0, value: 0.5 }, { frame: 36, value: 1, easing: "ease-in-out" }, { frame: 72, value: 0.5, easing: "ease-in-out" }] },
+      { target: "fSpark", property: "trimOffset", keyframes: [{ frame: 0, value: 0 }, { frame: 72, value: 1, easing: "linear" }] },
+    );
+  } else {
+    shapes.push(
+      F({ id: "fGlow", type: "rect", x: 0, y: -9, width: 300, height: 26, z: 3, fill: vGrad(26, [{ color: alpha(C, 0) }, { color: alpha(C, 0.14), position: 0.55 }, { color: alpha(C, 0.4) }]) }),
+      F({ id: "fBand", type: "rect", x: 0, y: 2, width: 300, height: 4, z: 4, fill: hGrad(300, [{ color: alpha(C, 0.15) }, { color: C, position: 0.5 }, { color: alpha(C, 0.15) }]) }),
+      F({ id: "fEdge", type: "rect", x: 0, y: -21, width: 300, height: 1.2, z: 5, fill: hGrad(300, [{ color: alpha(WHITE, 0) }, { color: WHITE, position: 0.5 }, { color: alpha(WHITE, 0) }]), opacity: 0.7 }),
+      F({ id: "fScanA", type: "polygon", x: 0, y: -4, closed: false, z: 6, points: [{ x: -148, y: 0 }, { x: 148, y: 0 }], stroke: { color: WHITE, thickness: 1.4, trim: { start: 0, end: 0.12, offset: 0 } } }),
+      F({ id: "fScanB", type: "polygon", x: 0, y: -13, closed: false, z: 6, points: [{ x: 148, y: 0 }, { x: -148, y: 0 }], stroke: { color: C, thickness: 1.2, trim: { start: 0, end: 0.2, offset: 0.5 } } }),
+    );
+    const r = rng(41);
+    for (let i = 0; i < 13; i++) {
+      const id = `fRib${i}`, off = Math.floor(r() * 60);
+      shapes.push(F({ id, type: "rect", x: -144 + i * 24, y: -8, width: 1, height: 22, z: 4, opacity: 0.2, fill: vGrad(22, [{ color: alpha(C, 0) }, { color: C }]) }));
+      on.push({ target: id, property: "opacity", keyframes: [{ frame: 0, value: 0.15 }, { frame: off, value: 0.15, easing: "hold" }, { frame: off + 4, value: 0.9, easing: "ease-out" }, { frame: off + 14, value: 0.15, easing: "ease-in" }, { frame: 72, value: 0.15 }] });
+    }
+    for (let i = 0; i < 9; i++) {
+      const id = `fMote${i}`, x = -135 + r() * 270, off = Math.floor((i / 9) * 72), rise = 40;
+      shapes.push(F({ id, type: "ellipse", x, y: 2, width: 2.4, height: 2.4, z: 7, opacity: 0, fill: { color: WHITE } }));
+      const k = [{ frame: 0, value: off ? 2 : 2 }];
+      const fr = (f) => ((f % 72) + 72) % 72;
+      const a = off, b = off + rise;
+      on.push(
+        { target: id, property: "y", keyframes: b <= 72
+          ? [{ frame: 0, value: 2 }, { frame: a, value: 2, easing: "hold" }, { frame: b, value: -20, easing: "ease-out" }, { frame: 72, value: -20 }]
+          : [{ frame: 0, value: 2 - 22 * ((72 - a) / rise) }, { frame: fr(b), value: -20, easing: "ease-out" }, { frame: a, value: 2, easing: "hold" }, { frame: 72, value: 2 - 22 * ((72 - a) / rise), easing: "linear" }] },
+        { target: id, property: "opacity", keyframes: b <= 72
+          ? [{ frame: 0, value: 0 }, { frame: a, value: 0, easing: "hold" }, { frame: a + 6, value: 1, easing: "ease-out" }, { frame: b, value: 0, easing: "ease-in" }, { frame: 72, value: 0 }]
+          : [{ frame: 0, value: 0.6 }, { frame: fr(b), value: 0, easing: "ease-in" }, { frame: a, value: 0, easing: "hold" }, { frame: a + 6, value: 1, easing: "ease-out" }, { frame: 72, value: 0.6 }] },
+      );
+    }
+    on.push(
+      { target: "fScanA", property: "trimOffset", keyframes: [{ frame: 0, value: 0 }, { frame: 72, value: 1, easing: "linear" }] },
+      { target: "fScanB", property: "trimOffset", keyframes: [{ frame: 0, value: 0.5 }, { frame: 72, value: -0.5, easing: "linear" }] },
+      { target: "fBand", property: "opacity", keyframes: [{ frame: 0, value: 0.75 }, { frame: 18, value: 1, easing: "ease-in-out" }, { frame: 36, value: 0.75, easing: "ease-in-out" }, { frame: 54, value: 1, easing: "ease-in-out" }, { frame: 72, value: 0.75, easing: "ease-in-out" }] },
+      { target: "fGlow", property: "opacity", keyframes: [{ frame: 0, value: 0.7 }, { frame: 36, value: 1, easing: "ease-in-out" }, { frame: 72, value: 0.7, easing: "ease-in-out" }] },
+      { target: "fEdge", property: "opacity", keyframes: [{ frame: 0, value: 0.45 }, { frame: 24, value: 0.9, easing: "ease-in-out" }, { frame: 48, value: 0.45, easing: "ease-in-out" }, { frame: 72, value: 0.45 }] },
+    );
+  }
+  const anims = [
+    { name: "fieldHidden", fps: 60, duration: 1, loop: "oneShot", tracks: [
+      { target: "field", property: "opacity", keyframes: [{ frame: 0, value: 0 }] }, { target: "field", property: "scaleY", keyframes: [{ frame: 0, value: 0.1 }] }] },
+    { name: "fieldUp", fps: 60, duration: 24, loop: "oneShot", tracks: [
+      { target: "field", property: "opacity", keyframes: [{ frame: 0, value: 0 }, { frame: 6, value: 1, easing: "ease-out" }] },
+      { target: "field", property: "scaleY", keyframes: [{ frame: 0, value: 0.1 }, { frame: 24, value: 1, easing: "elastic-out", amplitude: 1, period: 0.3 }] }] },
+    { name: "fieldOn", fps: 60, duration: 72, loop: "loop", tracks: [
+      { target: "field", property: "opacity", keyframes: [{ frame: 0, value: 1 }, { frame: 72, value: 1 }] }, ...on] },
+    { name: "fieldDown", fps: 60, duration: 12, loop: "oneShot", tracks: [
+      { target: "field", property: "opacity", keyframes: [{ frame: 0, value: 1 }, { frame: 12, value: 0, easing: "ease-in" }] },
+      { target: "field", property: "scaleY", keyframes: [{ frame: 0, value: 1 }, { frame: 12, value: 0.1, easing: "emphasized-accel" }] }] },
+  ];
+  return { shapes, anims };
+}
+
 function paddleScene(style = "arcade") {
   const PW = 320, PH = 96, CY = 52, BASE = 100, CAP = 24;
   const groups = [
@@ -357,6 +428,7 @@ function paddleScene(style = "arcade") {
     { id: "capR", parent: "paddle", x: BASE / 2, y: 0 },
     { id: "gunL", parent: "capL", x: 0, y: -4 },
     { id: "gunR", parent: "capR", x: 0, y: -4 },
+    { id: "field", parent: "paddle", x: 0, y: -16, opacity: 0 },
   ];
   let cap = (side) => [
     { id: `gun${side}b`, parent: `gun${side}`, type: "rect", x: 0, y: -8, width: 7, height: 16, cornerRadius: 2, z: 5,
@@ -372,8 +444,6 @@ function paddleScene(style = "arcade") {
   let shapes = [
     { id: "glow", parent: "paddle", type: "ellipse", x: 0, y: 2, width: 300, height: 56, z: 1, blendMode: "screen", opacity: 0.6,
       fill: { gradient: { type: "radial", start: { x: 0, y: 0 }, end: { x: 150, y: 0 }, stops: [{ color: alpha(P.primaryStrong, 0.75), position: 0 }, { color: alpha(P.primaryStrong, 0), position: 1 }] } } },
-    { id: "magnet", parent: "paddle", type: "rect", x: 0, y: -10, width: 300, height: 10, cornerRadius: 5, z: 2, blendMode: "screen", opacity: 0,
-      fill: vGrad(10, [{ color: alpha(P.accent, 0) }, { color: P.accent }]) },
     ...cap("L"), ...cap("R"),
     { id: "barF", parent: "bar", type: "rect", x: 0, y: 0, width: BASE, height: 18, cornerRadius: 4, z: 10,
       fill: vGrad(18, [{ color: T.gradients.primary[0], position: 0 }, { color: P.primaryStrong, position: 0.55 }, { color: T.gradients.primary[1], position: 1 }]) },
@@ -385,13 +455,15 @@ function paddleScene(style = "arcade") {
       fill: { gradient: { type: "radial", start: { x: 0, y: 0 }, end: { x: 150, y: 0 }, stops: [{ color: P.text }, { color: alpha(P.accent, 0) }] } } },
   ];
   if (style === "hud") ({ cap, shapes } = hudPaddleParts(BASE, CAP));
+  const field = catchField(style);
+  shapes = [...shapes, ...field.shapes];
   // size poses for the blend state (inner bar width 60..280)
   const pose = (inner) => [
     { target: "bar", property: "scaleX", keyframes: [{ frame: 0, value: inner / BASE }] },
     { target: "capL", property: "x", keyframes: [{ frame: 0, value: -inner / 2 }] },
     { target: "capR", property: "x", keyframes: [{ frame: 0, value: inner / 2 }] },
     { target: "glow", property: "scaleX", keyframes: [{ frame: 0, value: (inner + 60) / 300 }] },
-    { target: "magnet", property: "scaleX", keyframes: [{ frame: 0, value: (inner + 20) / 300 }] },
+    { target: "field", property: "scaleX", keyframes: [{ frame: 0, value: (inner + 20) / 300 }] },
     { target: "flash", property: "scaleX", keyframes: [{ frame: 0, value: (inner + 30) / 300 }] },
   ];
   const guns = (on) => ["gunL", "gunR"].flatMap((g) => [
@@ -417,10 +489,7 @@ function paddleScene(style = "arcade") {
         { target: g, property: "opacity", keyframes: [{ frame: 0, value: 0 }] }, { target: g, property: "y", keyframes: [{ frame: 0, value: 4 }] }]) },
       { name: "gunsOn", fps: 60, duration: 16, loop: "oneShot", tracks: guns(true) },
       { name: "gunsOff", fps: 60, duration: 10, loop: "oneShot", tracks: guns(false) },
-      { name: "magnetOn", fps: 60, duration: 60, loop: "loop",
-        tracks: [{ target: "magnet", property: "opacity", keyframes: [{ frame: 0, value: 0.35 }, { frame: 30, value: 0.95, easing: "ease-in-out" }, { frame: 60, value: 0.35, easing: "ease-in-out" }] }] },
-      { name: "magnetOff", fps: 60, duration: 8, loop: "oneShot",
-        tracks: [{ target: "magnet", property: "opacity", keyframes: [{ frame: 0, value: 0.35 }, { frame: 8, value: 0, easing: "ease-in" }] }] },
+      ...field.anims,
     ],
     stateMachine: {
       name: "PaddleSM",
@@ -434,25 +503,37 @@ function paddleScene(style = "arcade") {
           transitions: [{ from: "entry", to: "off" }, { from: "off", to: "on", condition: { input: "laser", value: true } },
             { from: "on", to: "retract", condition: { input: "laser", value: false } }, { from: "retract", to: "on", condition: { input: "laser", value: true } },
             { from: "retract", to: "off", exitTimeMs: 170 }] },
-        { name: "Magnet", states: [{ name: "off", animation: "magnetOff" }, { name: "on", animation: "magnetOn" }],
-          transitions: [{ from: "entry", to: "off" }, { from: "off", to: "on", condition: { input: "magnet", value: true } }, { from: "on", to: "off", condition: { input: "magnet", value: false } }] },
+        { name: "Magnet", states: [{ name: "off", animation: "fieldHidden" }, { name: "up", animation: "fieldUp" }, { name: "on", animation: "fieldOn" }, { name: "down", animation: "fieldDown" }],
+          transitions: [{ from: "entry", to: "off" },
+            { from: "off", to: "up", condition: { input: "magnet", value: true } }, { from: "up", to: "on", exitTimeMs: 400 },
+            { from: "on", to: "down", condition: { input: "magnet", value: false } }, { from: "up", to: "down", condition: { input: "magnet", value: false } },
+            { from: "down", to: "off", exitTimeMs: 200 }, { from: "down", to: "up", condition: { input: "magnet", value: true } }] },
       ],
     },
   };
 }
 
 // ---------------------------------------------------------------- 4. power-up capsules (one artboard per kind)
+// All 14 original Megaball capsules (+ Multiball and Fast from Neo). cls follows the original's colour code:
+// good = blue, bad = red, size (paddle) = yellow.
 const KINDS = [
-  { k: "E", seed: "#5ce07a", good: true },  // Expand
-  { k: "S", seed: "#3d9bff", good: true },  // Slow
-  { k: "C", seed: "#2ed3c6", good: true },  // Catch
-  { k: "L", seed: "#ff4d6d", good: true },  // Laser
-  { k: "M", seed: "#8a5cff", good: true },  // Multiball
-  { k: "B", seed: "#ff8a3d", good: true },  // Mega (break-through) ball
-  { k: "P", seed: "#ffc93d", good: true },  // +1 Player
-  { k: "X", seed: "#7a7f8f", good: false }, // Shrink
-  { k: "F", seed: "#c2334d", good: false }, // Fast
-];
+  { k: "S", seed: "#3d9bff", cls: "good" }, // Slow ball
+  { k: "N", seed: "#3dd6ff", cls: "good" }, // Next board
+  { k: "L", seed: "#ff4d6d", cls: "good" }, // Lasers
+  { k: "G", seed: "#9b4dff", cls: "bad" },  // Gravity ball
+  { k: "C", seed: "#2ed3c6", cls: "good" }, // Catch ball
+  { k: "Q", seed: "#b8864b", cls: "bad" },  // New quicksand
+  { k: "D", seed: "#ffd23d", cls: "size" }, // Diet pill (shrink)
+  { k: "K", seed: "#ff2f4f", cls: "bad" },  // Kill (you)
+  { k: "P", seed: "#ffc93d", cls: "good" }, // Get a life
+  { k: "E", seed: "#5ce07a", cls: "size" }, // Expand paddle
+  { k: "B", seed: "#ff8a3d", cls: "good" }, // Brickthrough
+  { k: "Z", seed: "#ffb000", cls: "good" }, // Zap gold
+  { k: "T", seed: "#ff6a3d", cls: "good" }, // Dynamite
+  { k: "U", seed: "#c2334d", cls: "bad" },  // Magnetism
+  { k: "M", seed: "#8a5cff", cls: "good" }, // Multiball (Neo)
+  { k: "F", seed: "#c2334d", cls: "bad" },  // Fast ball (Neo)
+].map((kind) => ({ ...kind, good: kind.cls !== "bad" }));
 async function capsuleScene() {
   const CW = 80, CH = 40, PW = 60, PHh = 24;
   const artboards = [];
@@ -827,9 +908,42 @@ function bannerHudArtboard() {
   };
 }
 
+function hudCapsuleArtboards() {
+  const CLS = { good: HP.primary, bad: HUD_RED, size: HUD_ORANGE };
+  const chip = [{ x: -32, y: 0 }, { x: -24, y: -13 }, { x: 24, y: -13 }, { x: 32, y: 0 }, { x: 24, y: 13 }, { x: -24, y: 13 }];
+  return KINDS.map((kind) => {
+    const c = CLS[kind.cls], id = (s) => `h${kind.k}_${s}`, ICON = 0.62;
+    const icon = JSON.parse(readFileSync(join(ROOT, "rive-src", "icons", `${kind.k}.scene.json`), "utf8"));
+    const iconShapes = icon.shapes.map((sh) => ({ ...sh, parent: id("icon"), z: 30, fill: { color: c }, stroke: undefined }));
+    return {
+      name: `Hud${kind.k}`, width: 80, height: 40,
+      groups: [{ id: id("cap"), x: 40, y: 20 }, { id: id("icon"), parent: id("cap"), x: -15 - 12 * ICON, y: -12 * ICON, scaleX: ICON, scaleY: ICON }],
+      shapes: [
+        { id: id("halo"), parent: id("cap"), type: "ellipse", x: 0, y: 0, width: 84, height: 40, z: 1,
+          fill: { gradient: { type: "radial", start: { x: 0, y: 0 }, end: { x: 42, y: 0 }, stops: [{ color: alpha(c, 0.45), position: 0 }, { color: alpha(c, 0), position: 1 }] } } },
+        { id: id("body"), parent: id("cap"), type: "polygon", x: 0, y: 0, z: 2, points: chip,
+          fill: vGrad(26, [{ color: "#223246", position: 0 }, { color: "#0f1822", position: 0.6 }, { color: "#070d14", position: 1 }]) },
+        { id: id("well"), parent: id("cap"), type: "polygon", x: 0, y: 0, z: 3,
+          points: [{ x: -27, y: 0 }, { x: -21, y: -9 }, { x: -5, y: -9 }, { x: -5, y: 9 }, { x: -21, y: 9 }], fill: { color: alpha(c, 0.18) } },
+        { id: id("rim"), parent: id("cap"), type: "polygon", x: 0, y: 0, z: 4, points: chip, stroke: { color: c, thickness: 1.4, join: "miter" } },
+        { id: id("sweep"), parent: id("cap"), type: "polygon", x: 0, y: 0, z: 5, points: chip, stroke: { color: "#ffffff", thickness: 1.6, join: "miter", trim: { start: 0, end: 0.14, offset: 0 } } },
+        { id: id("hl"), parent: id("cap"), type: "rect", x: 2, y: -11, width: 36, height: 1, z: 6, opacity: 0.45, fill: { color: "#ffffff" } },
+        { id: id("tick"), parent: id("cap"), type: "rect", x: 1, y: 0, width: 1, height: 14, z: 6, opacity: 0.35, fill: { color: c } },
+        ...iconShapes,
+      ],
+      texts: [{ id: id("code"), parent: id("cap"), x: 2, y: -8, width: 26, height: 18, align: "center", z: 2100,
+        runs: [{ text: kind.k, fontSize: 11, color: kind.cls === "good" ? HP.text : c, font: "hudDisplay" }] }],
+      animations: [{ name: "idle", fps: 60, duration: 96, loop: "loop",
+        presets: [{ preset: "glow-pulse", target: id("halo"), cycleSeconds: 0.8 }],
+        tracks: [{ target: id("sweep"), property: "trimOffset", keyframes: [{ frame: 0, value: 0 }, { frame: 96, value: 1, easing: "linear" }] }] }],
+      stateMachine: { name: "CapSM", states: [{ name: "idle", animation: "idle" }], transitions: [{ from: "entry", to: "idle" }] },
+    };
+  });
+}
+
 function hudScene() {
   return {
-    artboards: [...orbitArtboard(), titleHudArtboard(), bannerHudArtboard(), (() => {
+    artboards: [...orbitArtboard(), titleHudArtboard(), bannerHudArtboard(), ...hudCapsuleArtboards(), (() => {
       const { artboard, ...rest } = paddleScene("hud");
       return { ...rest, name: "PaddleHUD", width: artboard.width, height: artboard.height };
     })()],
