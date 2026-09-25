@@ -12,11 +12,11 @@ Then open http://localhost:8080. You can also run `npm start`, which uses `http-
 
 **Controls:** move with the mouse, touch, or ← →. Launch the ball and fire lasers with Space or a click. P pauses, M mutes, and V switches views.
 
-Play online: **https://megaball.puk.me.uk**
+Play online: **https://megaball.garethwright.com** (also at https://megaball.puk.me.uk)
 
 ## Deploy
 
-The site is a static-assets Cloudflare Worker (`wrangler.jsonc`) that serves `public/` on the custom domain `megaball.puk.me.uk`. To deploy:
+The site is a static-assets Cloudflare Worker (`wrangler.jsonc`) that serves `public/` on the custom domains `megaball.garethwright.com` and `megaball.puk.me.uk`. To deploy:
 
 ```bash
 npx wrangler@4.40.0 deploy

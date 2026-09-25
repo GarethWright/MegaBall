@@ -8,6 +8,7 @@
     "not_found_handling": "404-page"
   },
   "routes": [
-    { "pattern": "megaball.puk.me.uk", "custom_domain": true }
+    { "pattern": "megaball.puk.me.uk", "custom_domain": true },
+    { "pattern": "megaball.garethwright.com", "custom_domain": true }
   ]
 }
