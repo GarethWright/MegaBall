@@ -105,14 +105,41 @@ window.addEventListener("resize", resize);
 
 // ------------------------------------------------------------------ audio (synthesised)
 const Sound = (() => {
-  let ac = null, master = null, muted = false, music = null, wanted = null;
+  let ac = null, master = null, muted = false, music = null, wanted = null, theme = null, musicView = "hud", paused = false;
+  // HUD view plays the recorded main theme; ARCADE view plays the synthesised tracker songs
+  const createTheme = (out) => {
+    const el = new Audio("music/maintheme.mp3");
+    el.loop = true; el.preload = "auto";
+    const g = ac.createGain(); g.gain.value = 0;
+    ac.createMediaElementSource(el).connect(g); g.connect(out);
+    let on = false;
+    const fade = (v, secs) => { const t = ac.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(v, t + secs); };
+    const level = () => (muted || paused ? 0 : 0.5);
+    return {
+      play() { if (on) return; on = true; el.play().catch(() => {}); fade(level(), 1.2); },
+      stop(secs = 1.2, rewind = true) {
+        if (!on) return; on = false; fade(0, secs);
+        setTimeout(() => { if (!on) { el.pause(); if (rewind) el.currentTime = 0; } }, secs * 1000 + 50);
+      },
+      refresh() { if (on) fade(level(), 0.25); },
+      get state() { return { on, paused: el.paused, time: +el.currentTime.toFixed(2), gain: +g.gain.value.toFixed(2) }; },
+    };
+  };
+  const apply = () => {
+    if (!music) return;
+    const hud = musicView === "hud";
+    if (wanted && hud) { music.stop(0.6); theme.play(); }
+    else if (wanted) { theme.stop(0.6, false); music.play(wanted); }
+    else { music.stop(); theme.stop(); }
+  };
   const init = () => {
     if (ac) return;
     ac = new (window.AudioContext || window.webkitAudioContext)();
     master = ac.createGain(); master.gain.value = 0.28; master.connect(ac.destination);
     const musicOut = ac.createGain(); musicOut.gain.value = 0.6; musicOut.connect(ac.destination);
     music = createMusic(ac, musicOut);
-    if (wanted) music.play(wanted);
+    theme = createTheme(musicOut);
+    apply();
   };
   const tone = (freq, dur, type = "square", vol = 0.5, slide = 0, delay = 0) => {
     if (!ac || muted) return;
@@ -132,10 +159,14 @@ const Sound = (() => {
   };
   const PENTA = [0, 2, 4, 7, 9, 12, 14, 16, 19];
   return {
-    get ready() { return !!ac; }, init, get muted() { return muted; }, toggle() { muted = !muted; music?.mute(muted); return muted; },
+    get ready() { return !!ac; }, init, get muted() { return muted; },
+    toggle() { muted = !muted; music?.mute(muted); theme?.refresh(); return muted; },
     // background music: "title" | "game" | null (fade out)
-    music: (name) => { wanted = name; if (!music) return; if (name) music.play(name); else music.stop(); },
-    pauseMusic: (p) => music?.pause(p),
+    music: (name) => { wanted = name; apply(); },
+    setView: (v) => { musicView = v; apply(); },
+    pauseMusic: (p) => { paused = p; music?.pause(p); theme?.refresh(); },
+    get debug() { return { theme: theme?.state, synth: music?.track ?? null, view: musicView, wanted }; },
+    get trackName() { return musicView === "hud" ? "MAIN THEME" : wanted === "title" ? "NEON HORIZON" : "BRICK RUNNER"; },
     paddle: () => { tone(220, 0.09, "square", 0.35, 110); tone(440, 0.06, "triangle", 0.2); },
     wall: () => tone(330, 0.04, "triangle", 0.2),
     brick: (row) => tone(440 * Math.pow(2, PENTA[row % PENTA.length] / 12), 0.12, "triangle", 0.45),
@@ -348,6 +379,7 @@ function setView(v) {
   try { localStorage.setItem("megaball-neo-view", v); } catch {}
   brickSprites.clear();
   planetCanvas.style.visibility = orbitCanvas.style.visibility = v === "hud" ? "visible" : "hidden";
+  Sound.setView(v);
   if (S.mode === "title") { if (title) title.dispose(); title = newTitle(); }
 }
 function togglePause() {
@@ -971,7 +1003,7 @@ function drawHudStrips() {
   }
   const mx = X + 14 + (cur / (n - 1)) * 200;
   ctx.fillStyle = HUD.orange; ctx.fillRect(mx - 1, Y + 66, 2, 20);
-  txt(`${Sound.muted ? "SOUND OFF" : Sound.ready ? "♪ " + (S.mode === "title" ? "NEON HORIZON" : "BRICK RUNNER") : "AUDIO STANDBY"}${loop ? `  ·  LOOP ${loop + 1}` : ""}`, X + 14, Y + 116, FU(9.5, 500), HP.textMuted, "left", 1.5);
+  txt(`${Sound.muted ? "SOUND OFF" : Sound.ready ? "♪ " + Sound.trackName : "AUDIO STANDBY"}${loop ? `  ·  LOOP ${loop + 1}` : ""}`, X + 14, Y + 116, FU(9.5, 500), HP.textMuted, "left", 1.5);
 }
 
 function drawHudField() {
@@ -1088,6 +1120,7 @@ function render() {
 // ------------------------------------------------------------------ main loop
 resize();
 planetCanvas.style.visibility = orbitCanvas.style.visibility = view === "hud" ? "visible" : "hidden";
+Sound.setView(view);
 toTitle();
 let last = performance.now();
 let lastError = null;
@@ -1129,4 +1162,4 @@ window.addEventListener("unhandledrejection", (e) => showError(e.reason));
 requestAnimationFrame(frame);
 
 // debugging hook for automated checks
-window.__megaball = { S, LEVELS, newGame, loadRound, startRound, applyCapsule, dropCapsule, get title() { return title; }, get view() { return view; }, get planet() { return planet; } };
+window.__megaball = { S, LEVELS, newGame, loadRound, startRound, applyCapsule, dropCapsule, get title() { return title; }, get view() { return view; }, get planet() { return planet; }, Sound };

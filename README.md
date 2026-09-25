@@ -71,7 +71,7 @@ Bricks come in these kinds: rainbow, silver (takes several hits), gold (indestru
 - a pulse-wave lead with delayed vibrato and echo
 - the Amiga's ~3.3 kHz "LED" low-pass filter on the mix
 
-There are two songs: **Neon Horizon** plays on the title screen and **Brick Runner** plays in game. Browsers only allow audio after you interact with the page, so on the title screen press **M** to start the music. Starting a game also starts it.
+In the **HUD** view the music is the recorded main theme, `public/music/maintheme.mp3`. It loops across the title and gameplay, and when you switch views it picks up where it left off. The **ARCADE** view uses two tracker songs instead: **Neon Horizon** plays on the title screen and **Brick Runner** plays in game. Browsers only allow audio after you interact with the page, so on the title screen press **M** to start the music. Starting a game also starts it.
 
 ## Rebuilding the Rive assets
 
