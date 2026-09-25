@@ -4,6 +4,7 @@
 // same game: HUD (mission-control UI around a WebGL Earth) and ARCADE (the original synthwave look).
 import { createMusic } from "./music.js";
 import { createPlanet } from "./planet.js";
+import { LEVELS, levelFor } from "./levels.js";
 import RiveFactory from "https://cdn.jsdelivr.net/npm/@rive-app/canvas-advanced@2.43.1/canvas_advanced.mjs";
 
 const W = 1200, H = 800;
@@ -207,17 +208,7 @@ const Sound = (() => {
 })();
 
 // ------------------------------------------------------------------ levels
-// . empty  1-8 rainbow  s silver (multi-hit)  g gold (indestructible)  x explosive  ? mystery (always drops)
-const LEVELS = [
-  { name: "RAINBOW ROAD", map: ["............", "111111111111", "222222222222", "333333333333", "444444444444", "555555555555", "666666666666", "777777777777"] },
-  { name: "THE PYRAMID", map: [".....88.....", "....7777....", "...666666...", "..55555555..", ".4444?44444.", "333333333333", "2222x22x2222", "ssss....ssss"] },
-  { name: "SPACE INVADERS", map: ["..5......5..", "...5....5...", "..55555555..", ".55.5555.55.", "5555?55?5555", "5.55555555.5", "5.5......5.5", "...55..55...", "............", "gg..gggg..gg"] },
-  { name: "THE FORTRESS", map: ["gggggggggggg", "g..........g", "g.33333333.g", "g.3?4444?3.g", "g.34x55x43.g", "g.3?4444?3.g", "g.33333333.g", "g..........g", "gggg....gggg"] },
-  { name: "TWIN DIAMONDS", map: ["..2......6..", ".212....656.", "21x12..65x56", ".212....656.", "..2......6..", ".....ss.....", "....s??s....", ".....ss....."] },
-  { name: "COPPER BARS", map: ["ssssssssssss", "888888888888", "............", "777777777777", "ssssssssssss", "666666666666", "............", "555555555555", "xx..xxxx..xx"] },
-  { name: "CHECKMATE", map: ["1.2.3.4.5.6.", ".2.3.4.5.6.7", "3.4.5.?.7.8.", ".4.5.6.7.8.1", "5.6.7.8.1.2.", ".6.?.8.1.2.3", "g..g..g..g.."] },
-  { name: "MEGA CORE", map: ["?ssssssssss?", "s8888888888s", "s8777777778s", "s87?6666?78s", "s8766xx6678s", "s87?6666?78s", "s8777777778s", "s8888888888s", "............", "....gggg...."] },
-];
+// 8 handcrafted rounds, then endless seeded procedural rounds (see levels.js)
 
 // ------------------------------------------------------------------ helpers
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -309,7 +300,7 @@ const keys = new Set();
 let pointerX = null;
 
 function loadRound(n) {
-  const L = LEVELS[n % LEVELS.length];
+  const L = levelFor(n);
   S.bricks = [];
   L.map.forEach((row, r) => [...row].forEach((ch, c) => {
     if (ch === ".") return;
@@ -350,9 +341,10 @@ function startRound(first = false) {
   loadRound(S.round);
   resetPaddleFx();
   serve();
-  logEvent(`ROUND ${String(S.round + 1).padStart(2, "0")} · ${LEVELS[S.round % LEVELS.length].name}`, "SECTOR", "info");
+  const L = levelFor(S.round);
+  logEvent(`ROUND ${String(S.round + 1).padStart(2, "0")} · ${L.name}`, L.procedural ? `GENERATED · ${L.seed.toString(16).toUpperCase()}` : "SECTOR", "info");
   setMode("ready");
-  showBanner(`ROUND ${S.round + 1}`, LEVELS[S.round % LEVELS.length].name + (S.round >= LEVELS.length ? `  ·  LOOP ${Math.floor(S.round / LEVELS.length) + 1}` : ""), "flash");
+  showBanner(`ROUND ${S.round + 1}`, L.name + (L.procedural ? `  ·  SEED ${L.seed.toString(16).toUpperCase()}` : ""), "flash");
 }
 
 function newGame() {
@@ -895,7 +887,7 @@ function drawHud() {
   ctx.fillStyle = P.primary; ctx.font = '22px "Audiowide"'; ctx.fillText(fmt(Math.max(hiScore, S.score)), 50, 222);
   label("ROUND", 50, 270);
   ctx.fillStyle = P.accent; ctx.font = '30px "Audiowide"'; ctx.fillText(String(S.round + 1).padStart(2, "0"), 50, 306);
-  ctx.fillStyle = P.textMuted; ctx.font = '12px "InterMB"'; ctx.fillText(LEVELS[S.round % LEVELS.length].name, 50, 326);
+  ctx.fillStyle = P.textMuted; ctx.font = '12px "InterMB"'; ctx.fillText(levelFor(S.round).name, 50, 326);
   label("LIVES", 50, 374);
   for (let i = 0; i < Math.min(S.lives, 8); i++) {
     const x = 50 + (i % 4) * 44, y = 390 + Math.floor(i / 4) * 22;
@@ -1039,7 +1031,7 @@ function drawHudTelemetry() {
     bar(X + 52, y + 33, PW - 82, v, i === 3 ? HUD.green : HP.primary);
     ctx.fillStyle = "rgba(255,255,255,0.05)"; ctx.fillRect(X + 12, y + 52, PW - 24, 1);
   });
-  txt(LEVELS[S.round % LEVELS.length].name, X + 52, Y + 56 + 2 * 60 + 48, FU(9), HP.textMuted, "left", 2);
+  txt(levelFor(S.round).name, X + 52, Y + 56 + 2 * 60 + 48, FU(9), HP.textMuted, "left", 2);
 
   // active systems
   let y = Y + 304;
@@ -1114,7 +1106,8 @@ function drawHudStrips() {
 
   // sector timeline (right)
   X = 948;
-  hudPanel(X, Y, 228, 128, "SECTOR TIMELINE", "LIVE · SYNCED", true);
+  const lvl = levelFor(S.round);
+  hudPanel(X, Y, 228, 128, "SECTOR TIMELINE", lvl.procedural ? "∞ GEN" : "LIVE · SYNCED", true);
   const maxH = Math.max(4, ...S.hist);
   S.hist.forEach((v, i) => {
     const h = 2 + (v / maxH) * 34, last = i === S.hist.length - 1;
@@ -1122,15 +1115,17 @@ function drawHudStrips() {
     ctx.fillRect(X + 14 + i * 4.2, Y + 70 - h, 2.6, h);
   });
   ctx.fillStyle = LINE; ctx.fillRect(X + 14, Y + 80, 200, 1);
-  const n = LEVELS.length, cur = S.round % n, loop = Math.floor(S.round / n);
+  // an 8-round window that scrolls forever
+  const n = 8, base = Math.floor(S.round / n) * n, cur = S.round - base;
   for (let i = 0; i < n; i++) {
-    const x = X + 14 + (i / (n - 1)) * 200;
+    const x = X + 14 + (i / (n - 1)) * 200, gen = base + i >= LEVELS.length;
     ctx.fillStyle = i <= cur ? HP.primary : LINE_DIM; ctx.fillRect(x, Y + 76, 1, 9);
-    txt(String(i + 1).padStart(2, "0"), x, Y + 98, FU(9), i === cur ? HUD.orange : HP.textMuted, "center");
+    txt(String(base + i + 1).padStart(2, "0"), x, Y + 98, FU(9), i === cur ? HUD.orange : gen ? HP.accent : HP.textMuted, "center");
   }
   const mx = X + 14 + (cur / (n - 1)) * 200;
   ctx.fillStyle = HUD.orange; ctx.fillRect(mx - 1, Y + 66, 2, 20);
-  txt(`${Sound.muted ? "SOUND OFF" : Sound.ready ? "♪ " + Sound.trackName : "AUDIO STANDBY"}${loop ? `  ·  LOOP ${loop + 1}` : ""}`, X + 14, Y + 116, FU(9.5, 500), HP.textMuted, "left", 1.5);
+  const music = Sound.muted ? "SOUND OFF" : Sound.ready ? "♪ " + Sound.trackName : "AUDIO STANDBY";
+  txt(lvl.procedural ? `SEED ${lvl.seed.toString(16).toUpperCase()}  ·  ${music}` : music, X + 14, Y + 116, FU(9.5, 500), HP.textMuted, "left", 1.5);
 }
 
 function drawHudField() {
@@ -1314,4 +1309,4 @@ window.addEventListener("unhandledrejection", (e) => showError(e.reason));
 requestAnimationFrame(frame);
 
 // debugging hook for automated checks
-window.__megaball = { S, LEVELS, newGame, loadRound, startRound, applyCapsule, dropCapsule, get title() { return title; }, get view() { return view; }, get planet() { return planet; }, Sound };
+window.__megaball = { S, LEVELS, levelFor, newGame, loadRound, startRound, applyCapsule, dropCapsule, get title() { return title; }, get view() { return view; }, get planet() { return planet; }, Sound };
